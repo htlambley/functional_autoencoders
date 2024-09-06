@@ -1,0 +1,115 @@
+encoder:
+  latent_dim: 64
+  is_variational: false
+  type: cnn
+  options:
+    pooling:
+      mlp_dim: 64
+      mlp_n_hidden_layers: 3
+    dirac:
+      features:
+        - 128
+        - 128
+        - 128
+    cnn:
+      cnn_features:
+        - 4
+        - 4
+        - 8
+        - 16
+      kernel_sizes:
+        - 2
+        - 2
+        - 4
+        - 4
+      strides:
+        - 2
+        - 2
+        - 2
+        - 2
+      mlp_features:
+        - 64
+
+decoder:
+  type: cnn
+  options:
+    nonlinear:
+      out_dim: 1
+      features:
+        - 100
+        - 100
+        - 100
+        - 100
+        - 100
+    dirac:
+      features:
+        - 128
+        - 128
+        - 128
+    cnn:
+      trans_cnn_features:
+        - 16
+        - 8
+        - 4
+        - 4
+      kernel_sizes:
+        - 4
+        - 4
+        - 2
+        - 2
+      strides:
+        - 2
+        - 2
+        - 2
+        - 2
+      mlp_features:
+        - 64
+      final_cnn_features:
+        - 8
+        - 1
+      final_kernel_sizes:
+        - 3
+        - 3
+      final_strides:
+        - 1
+        - 1
+      c_in: 32
+      grid_pts_in: 4
+
+domain:
+  type: off_grid_randomly_sampled_euclidean
+  options:
+    grid_zero_boundary_conditions:
+      s: 0
+    off_grid_randomly_sampled_euclidean:
+      s: 0
+    off_grid_sde: 
+      ~
+
+loss:
+  type: fae
+  options:
+    fae:
+      beta: 0.001
+      subtract_data_norm: false
+    vano:
+      beta: 0.001
+      n_monte_carlo_samples: 4
+      normalised_inner_prod: true
+      rescale_by_norm: false
+    fvae_sde:
+      beta: 1
+      theta: 0
+      zero_penalty: 10
+      n_monte_carlo_samples: 4
+
+positional_encoding:
+  is_used: False
+  dim: 32
+
+trainer:
+  max_step: 50_000
+  lr: 0.001
+  lr_decay_step: 1000
+  lr_decay_factor: 0.98
+  eval_interval: 10

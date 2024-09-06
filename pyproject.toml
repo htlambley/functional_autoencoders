@@ -1,0 +1,39 @@
+[build-system]
+# A list of packages that are needed to build your package:
+requires = ["setuptools"]  # REQUIRED if [build-system] table is used
+# The name of the Python object that frontends will use to perform the build:
+build-backend = "setuptools.build_meta"  # If not defined, then legacy behavior can happen.
+
+
+[project]
+name = "functional_autoencoders"
+version = "1.0.0"  
+description = "Functional autoencoder (FAE) and functional variational autoencoder (FVAE)"
+readme = "README.md"
+requires-python = ">=3.9"
+license = {file = "LICENSE"}
+keywords = ["machine learning", "deep learning", "autoencoders"]
+
+authors = [
+  {name = "Justin Bunker", email = "jb2200@cantab.ac.uk" },
+  {name = "Hefin Lambley", email = "hefin.lambley@warwick.ac.uk" },
+]
+
+maintainers = [
+  {name = "Justin Bunker", email = "jb2200@cantab.ac.uk" },
+  {name = "Hefin Lambley", email = "hefin.lambley@warwick.ac.uk" },
+]
+
+classifiers = [
+  "Development Status :: 5 - Production/Stable",
+  "Programming Language :: Python :: 3 :: Only",
+]
+
+dynamic = ["dependencies"]
+
+[project.urls]
+"Homepage" = "https://github.com/????"
+"Bug Reports" = "https://github.com/????/issues"
+
+[tool.setuptools.dynamic]
+dependencies = {file = ["requirements.txt"]}

@@ -1,0 +1,14 @@
+black
+jax
+# jax[cuda12]
+jaxlib
+flax
+numpy
+scipy
+h5py
+requests
+matplotlib
+seaborn
+dill
+ipywidgets
+scikit-learn

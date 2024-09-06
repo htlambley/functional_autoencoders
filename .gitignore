@@ -1,0 +1,17 @@
+__pycache__
+data
+test*.ipynb
+*.sqlite3
+*.db
+*.out
+runs
+ckpts
+tmp/
+figures/
+todo.txt
+*.png
+!doc/*.png
+!quickstart/images/*.png
+*.pdf
+experiments/scripts/dirac/*results*.yaml
+*.pkl
