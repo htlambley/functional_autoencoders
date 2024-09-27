@@ -3,6 +3,7 @@ import sys
 sys.path.append(".")
 import os
 import jax
+from time import time
 from typing import Literal
 from jax.typing import ArrayLike
 from experiments.trainer_loader import get_trainer
@@ -13,6 +14,7 @@ from functional_autoencoders.datasets.sde import (
     get_brownian_dynamics_drift,
 )
 from functional_autoencoders.util import (
+    save_data_results,
     save_model_results,
     yaml_load,
     fit_trainer_using_config,
@@ -94,13 +96,30 @@ def run_sde1d(key, output_dir, config_path, theta_list, verbose=True):
         key, subkey = jax.random.split(key)
         trainer = get_trainer(subkey, config_sde1d, train_dataloader, test_dataloader)
 
+        start_time = time()
+
         key, subkey = jax.random.split(key)
         results = fit_trainer_using_config(
             subkey, trainer, config_sde1d, verbose="metrics" if verbose else "none"
         )
 
+        training_time = time() - start_time
+
         save_model_results(
             autoencoder=trainer.autoencoder,
             results=results,
             model_dir=os.path.join(output_dir, "models", str(theta)),
+        )
+
+        save_data_results(
+            autoencoder=trainer.autoencoder,
+            results=results,
+            test_dataloader=test_dataloader,
+            data_dir=os.path.join(
+                output_dir, "data", '0', str(theta)
+            ),
+            additional_data={
+                "theta": theta,
+                "training_time": training_time,
+            },
         )

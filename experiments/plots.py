@@ -576,3 +576,18 @@ def plot_runs_and_medians(
 
     if bottom is not None:
         ax.set_ylim(bottom=bottom)
+
+
+def plot_wallclock(ax, losses, right_lim=100, label_fn=lambda x: x):
+    cs = get_cmap("Reds", len(losses))
+    linestyles = ["-", "--", ":"]
+    shapes = ["o", "s", "^"]
+    for i, quantity in enumerate(sorted(losses.keys())):
+        xs = losses[quantity].keys()
+        ys = [losses[quantity][x] for x in xs]
+        ax.plot(xs, ys, ls=linestyles[i], label=label_fn(quantity), color=cs[i])
+        ax.scatter(xs, ys, marker=shapes[i], color=cs[i])
+    ax.set_xlim(left=0, right=right_lim)
+    ax.set_ymargin(0.08)
+    ax.xaxis.set_tick_params(top=False, which="both")
+    ax.yaxis.set_tick_params(right=False, which="both")
