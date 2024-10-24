@@ -90,7 +90,7 @@ def plot_reconstructions_and_generated_samples(
     ax2.xaxis.set_tick_params(top=False)
     ax2.set_yticks([-1, 0, 1])
     if title:
-        ax2.set_title(r"(b) Realizations of $g(z; \theta_{g}) + \eta$")
+        ax2.set_title(r"(b) Realizations of $g(z; \psi) + \eta$")
 
     n_repeats = 1000
     for i in range(n_samples):
@@ -106,7 +106,7 @@ def plot_reconstructions_and_generated_samples(
 
         std = jnp.std(s[:, :, 0], axis=0)
         if i == 0:
-            ax3.plot(x[i], samples[i], c=cs_u[i], label=r"$g(z; \theta_{g})$")
+            ax3.plot(x[i], samples[i], c=cs_u[i], label=r"$g(z; \psi)$")
             ax3.fill_between(
                 x[i, :, 0],
                 samples[i, :, 0] - std,
@@ -129,7 +129,7 @@ def plot_reconstructions_and_generated_samples(
     ax3.xaxis.set_tick_params(top=False)
     ax3.set_yticks([-1, 0, 1])
     if title:
-        ax3.set_title(r"(c) Distribution of $g(z; \theta_{g}) + \eta$")
+        ax3.set_title(r"(c) Distribution of $g(z; \psi) + \eta$")
 
 
 def plot_latent_variable(
@@ -157,7 +157,7 @@ def plot_latent_variable(
     ax.set_yticks([-1, 0, 1])
     ax.xaxis.set_tick_params(right=False)
     ax.yaxis.set_tick_params(top=False)
-    ax.set_title(r"(a) $g(z; \theta_{g})(t)$ for $z \in [-2.5, 2.5]$")
+    ax.set_title(r"(a) $g(z; \psi)(t)$ for $z \in [-2.5, 2.5]$")
 
     def truncate_colormap(cmap, minval=0.0, maxval=1.0, n=100):
         new_cmap = matplotlib.colors.LinearSegmentedColormap.from_list(
