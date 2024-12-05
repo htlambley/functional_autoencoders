@@ -85,12 +85,12 @@ def plot_reconstructions_and_generated_samples(
     )
 
     for i in range(n_samples):
-        ax2.plot(x[i], s[i], c=cs_u[i])
-    ax2.yaxis.set_tick_params(right=False)
-    ax2.xaxis.set_tick_params(top=False)
-    ax2.set_yticks([-1, 0, 1])
+        ax3.plot(x[i], s[i], c=cs_u[i])
+    ax3.yaxis.set_tick_params(right=False)
+    ax3.xaxis.set_tick_params(top=False)
+    ax3.set_yticks([-1, 0, 1])
     if title:
-        ax2.set_title(r"(b) Realizations of $g(z; \psi) + \eta$")
+        ax3.set_title(r"(c) Realizations of $g(z; \psi) + \eta$")
 
     n_repeats = 1000
     for i in range(n_samples):
@@ -106,8 +106,8 @@ def plot_reconstructions_and_generated_samples(
 
         std = jnp.std(s[:, :, 0], axis=0)
         if i == 0:
-            ax3.plot(x[i], samples[i], c=cs_u[i], label=r"$g(z; \psi)$")
-            ax3.fill_between(
+            ax2.plot(x[i], samples[i], c=cs_u[i], label=r"$g(z; \psi)$")
+            ax2.fill_between(
                 x[i, :, 0],
                 samples[i, :, 0] - std,
                 samples[i, :, 0] + std,
@@ -116,8 +116,8 @@ def plot_reconstructions_and_generated_samples(
                 label="1 SD",
             )
         else:
-            ax3.plot(x[i], samples[i], c=cs_u[i])
-            ax3.fill_between(
+            ax2.plot(x[i], samples[i], c=cs_u[i])
+            ax2.fill_between(
                 x[i, :, 0],
                 samples[i, :, 0] - std,
                 samples[i, :, 0] + std,
@@ -125,11 +125,11 @@ def plot_reconstructions_and_generated_samples(
                 alpha=0.4,
             )
 
-    ax3.yaxis.set_tick_params(right=False)
-    ax3.xaxis.set_tick_params(top=False)
-    ax3.set_yticks([-1, 0, 1])
+    ax2.yaxis.set_tick_params(right=False)
+    ax2.xaxis.set_tick_params(top=False)
+    ax2.set_yticks([-1, 0, 1])
     if title:
-        ax3.set_title(r"(c) Distribution of $g(z; \psi) + \eta$")
+        ax2.set_title(r"(b) Distribution of $g(z; \psi) + \eta$")
 
 
 def plot_latent_variable(
