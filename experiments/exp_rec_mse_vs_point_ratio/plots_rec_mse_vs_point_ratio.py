@@ -136,7 +136,7 @@ def plot_error_vs_point_ratio(
 
     plt.xlim(0, max_error)
     plt.xlabel('MSE')
-    plt.legend(title='Point \% (train)')
+    plt.legend(title='Point \% (evaluation)')
     if save_dir is not None:
         plt.savefig(f'{save_dir}/high_model_mse.pdf', bbox_inches='tight')
         plt.close()
