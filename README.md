@@ -6,7 +6,8 @@ This is the official code repository accompanying the paper:
 
 > **Autoencoders in Function Space** 
 >
-> Justin Bunker, Mark Girolami, Hefin Lambley, Andrew M. Stuart and T. J. Sullivan (2024).
+> Justin Bunker, Mark Girolami, Hefin Lambley, Andrew M. Stuart and T. J. Sullivan (2025).
+> To appear in *Journal of Machine Learning Research* **26**.
 >
 > [arXiv:2408.01362](https://arxiv.org/abs/2408.01362).
 
@@ -50,10 +51,15 @@ clone the repository, install the dependencies, and run the main experimental sc
 
 You can cite the preprint with the following BibTeX/BibLaTeX entry:
 
-    @misc{BunkerGirolamiLambleyStuartSullivan2024,
+    @article{BunkerGirolamiLambleyStuartSullivan2025,
         author = {Bunker, Justin and Girolami, Mark and Lambley, Hefin and Stuart, Andrew M. and Sullivan, T. J.},
         title = {Autoencoders in Function Space},
-        note = {arXiv Preprint arXiv:2408.01362}
+        journal = {Journal of Machine Learning Research},
+        pages = {1--54}, 
+        volume = {26},
+        note = {To appear},
+        year = {2025},
+        url = {http://jmlr.org/papers/v26/25-0035.html},
     }
 
 Questions, comments, and suggestions for the code repository are welcome through the issue tracker on GitHub or via email to
