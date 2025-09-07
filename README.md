@@ -7,9 +7,9 @@ This is the official code repository accompanying the paper:
 > **Autoencoders in Function Space** 
 >
 > Justin Bunker, Mark Girolami, Hefin Lambley, Andrew M. Stuart and T. J. Sullivan (2025).
-> To appear in *Journal of Machine Learning Research* **26**.
+> *Journal of Machine Learning Research* **26**(165):1–54.
 >
-> [arXiv:2408.01362](https://arxiv.org/abs/2408.01362).
+> [Full text at JMLR](https://jmlr.org/papers/volume26/25-0035/25-0035.pdf) —  [arXiv:2408.01362](https://arxiv.org/abs/2408.01362).
 
 The `functional_autoencoders` module contains implementations of 
 1. **Functional Variational Autoencoder (FVAE)**, an extension of variational autoencoders (VAEs) to functional data; and
@@ -57,7 +57,7 @@ You can cite the preprint with the following BibTeX/BibLaTeX entry:
         journal = {Journal of Machine Learning Research},
         pages = {1--54}, 
         volume = {26},
-        note = {To appear},
+        number = {165},
         year = {2025},
         url = {http://jmlr.org/papers/v26/25-0035.html},
     }
