@@ -49,7 +49,7 @@ clone the repository, install the dependencies, and run the main experimental sc
 
 ## Citation
 
-You can cite the preprint with the following BibTeX/BibLaTeX entry:
+You can cite the paper with the following BibTeX/BibLaTeX entry:
 
     @article{BunkerGirolamiLambleyStuartSullivan2025,
         author = {Bunker, Justin and Girolami, Mark and Lambley, Hefin and Stuart, Andrew M. and Sullivan, T. J.},
