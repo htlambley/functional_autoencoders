@@ -20,6 +20,8 @@ class ComplementMasking:
     def __call__(self, u, x):
         if self.encoder_point_ratio == -1:
             return u, x, u, x
+        elif self.encoder_point_ratio <= 0.0 or self.encoder_point_ratio >= 1.0:
+            raise ValueError("`encoder_point_ratio` for `ComplementMasking` should be in range 0 < encoder_point_ratio < 1.")
 
         n_total_pts = u.shape[0]
         n_rand_pts = int(self.encoder_point_ratio * n_total_pts)
@@ -43,6 +45,8 @@ class RandomMasking:
     def __call__(self, u, x):
         if self.encoder_point_ratio == -1 and self.decoder_point_ratio == -1:
             return u, x, u, x
+        elif self.encoder_point_ratio <= 0.0 or self.encoder_point_ratio >= 1.0 or self.decoder_point_ratio <= 0.0 or self.decoder_point_ratio >= 1.0:
+            raise ValueError("Point ratios for `RandomMasking` should be in range 0 < point_ratio < 1.")
 
         n_total_pts = u.shape[0]
         n_rand_pts_enc = int(self.encoder_point_ratio * n_total_pts)
@@ -65,6 +69,8 @@ class RandomMissingData:
     point_ratio: float
 
     def __call__(self, u, x):
+        if self.point_ratio <= 0.0 or self.point_ratio >= 1.0:
+            raise ValueError("`point_ratio` for `RandomMissingData` should satisfy 0.0 < point_ratio < 1.0")
         n_points = int(u.shape[1] * self.point_ratio)
         indices = np.sort(np.random.choice(u.shape[1], n_points, replace=False))
         u = u[:, indices]
@@ -338,3 +344,4 @@ class DownloadableDataset(Dataset, OnDiskDataset):
             self.dataset_name,
             self.download_filename,
         )
+
