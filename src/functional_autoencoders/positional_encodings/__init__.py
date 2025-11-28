@@ -24,7 +24,7 @@ class PositionalEncoding:
 
 
 @dataclass
-class FourierEncoding1D:
+class FourierEncoding1D(PositionalEncoding):
     k: int
     L: float = 1
 
@@ -33,7 +33,7 @@ class FourierEncoding1D:
 
 
 @dataclass
-class RandomFourierEncoding:
+class RandomFourierEncoding(PositionalEncoding):
     B: ArrayLike
 
     def __call__(self, x):
