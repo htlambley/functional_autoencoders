@@ -168,7 +168,7 @@ class NumpyLoader(DataLoader):
 
 class OnDiskDataset:
     data_base: str
-    dataset_filename: str
+    dataset_name: str
     dataset_filename: str
 
     @property
@@ -344,4 +344,5 @@ class DownloadableDataset(Dataset, OnDiskDataset):
             self.dataset_name,
             self.download_filename,
         )
+
 
