@@ -9,7 +9,7 @@ norms and inner products needed in the FVAE and FAE losses.
   - functional data on a square domain (with arbitrary boundary conditions), discretised on possibly non-grid meshes (`functional_autoencoders.domains.off_grid.RandomlySampledEuclidean`).
 
 The `grid` domains allow for the assumption that the data lies in a Sobolev space of nonzero order, and the commensurate use
-of Sobolev norms in the loss, whereas the `non_grid` do not permit this. 
+of Sobolev norms in the loss, whereas the `non_grid` do not permit this.
 """
 
 import jax
@@ -41,5 +41,6 @@ class Domain:
     def inner_product(self, u: ArrayLike, v: ArrayLike, x: ArrayLike) -> jax.Array:
         raise NotImplementedError()
 
+    @property
     def nonlocal_transform(self) -> NonlocalTransform:
         raise NotImplementedError()

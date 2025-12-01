@@ -57,7 +57,6 @@ class FNO(nn.Module):
     domain: Domain
     act = None
     R_init: Initializer = None
-
     mlp_init: Initializer = None
     mlp_bias: bool = True
 
@@ -81,29 +80,3 @@ class FNO(nn.Module):
             u = FNOLayer(layer_modes, self.domain, **fno_kwargs)(u)
         u = MLP(self.projection_features, **mlp_kwargs)(u)
         return u
-
-
-class FNO1D(nn.Module):
-    n_modes: Sequence[int]
-    lifting_features: Sequence[int]
-    projection_features: Sequence[int]
-    domain: Domain
-    act = None
-
-    R_init: Initializer = None
-
-    mlp_init: Initializer = None
-    mlp_bias: bool = True
-
-    @nn.compact
-    def __call__(self, u, x):
-        return FNO(
-            n_modes=[(mode,) for mode in self.n_modes],
-            lifting_features=self.lifting_features,
-            projection_features=self.projection_features,
-            domain=self.domain,
-            act=self.act,
-            R_init=self.R_init,
-            mlp_init=self.mlp_init,
-            mlp_bias=self.mlp_bias,
-        )(u)

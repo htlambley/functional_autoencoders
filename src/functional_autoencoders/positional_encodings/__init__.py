@@ -6,7 +6,7 @@ from functools import partial
 
 
 class PositionalEncoding:
-    """Maps co-ordinates :math:`x` to a function :math:`\gamma(x)`.
+    r"""Maps co-ordinates :math:`x` to a function :math:`\gamma(x)`.
 
     A positional encoding is a map :math:`\gamma(x)` mapping an `in_dim`-dimensional co-ordinate :math:`x` to an `encoding_dim`-dimensional
     positional encoding of that co-ordinate.
@@ -46,7 +46,7 @@ class IdentityEncoding(PositionalEncoding):
 
 
 @partial(jax.vmap, in_axes=(0, None, None))
-def _fourier_features(x, k, L=1):
+def _fourier_features(x, k, L=1.0):
     r"""Computes Fourier features $[\cos(\omega x), \sin(\omega x), \dots, \cos(k\omega x), \sin(k\omega x)]$ for tensor of shape [queries, 1].
 
     The factor $\omega$ is given by $2\pi / L$.
