@@ -32,8 +32,8 @@ classifiers = [
 dynamic = ["dependencies"]
 
 [project.urls]
-"Homepage" = "https://github.com/????"
-"Bug Reports" = "https://github.com/????/issues"
+"Homepage" = "https://github.com/htlambley/functional_autoencoders"
+"Bug Reports" = "https://github.com/htlambley/functional_autoencoders/issues"
 
 [tool.setuptools.dynamic]
 dependencies = {file = ["requirements.txt"]}
