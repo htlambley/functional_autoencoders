@@ -93,6 +93,10 @@ def _get_transition_matrix_single(u_bucket, n):
 
     This is more efficient than nested loops as it avoids JAX tracing overhead
     for each loop iteration and allows the computation to be fully vectorized.
+
+    Note: Negative bucket indices (e.g., -1 for out-of-bounds points) are handled
+    gracefully by jax.nn.one_hot, which returns all-zeros vectors for negative indices.
+    This means transitions involving invalid buckets are simply not counted.
     """
     # Create pairs of (from_bucket, to_bucket)
     from_buckets = u_bucket[:-1].astype(jnp.int32)
@@ -100,6 +104,8 @@ def _get_transition_matrix_single(u_bucket, n):
 
     # Use one-hot encoding to count transitions
     # Shape: [T-1, n] for from_buckets one-hot
+    # Note: jax.nn.one_hot returns zeros for negative indices, so invalid
+    # bucket indices are automatically excluded from transition counting
     from_one_hot = jax.nn.one_hot(from_buckets, n)
     # Shape: [T-1, n] for to_buckets one-hot
     to_one_hot = jax.nn.one_hot(to_buckets, n)

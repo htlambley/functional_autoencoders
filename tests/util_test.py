@@ -59,6 +59,19 @@ class TestTransitionMatrix(unittest.TestCase):
 
         self.assertEqual(P.shape, (2, 3, 3))
 
+    def test_negative_bucket_handling(self):
+        """Test that negative bucket indices (out-of-bounds) are ignored."""
+        # Sequence with some invalid (-1) buckets
+        u_bucket = jnp.array([[-1, 0, 1, -1, 1, 0]], dtype=jnp.float32)
+        n = 2
+        P = get_transition_matrix(u_bucket, n)
+
+        # Valid transitions: 0->1, 1->0 (ignoring -1 entries)
+        # Row 0: [0, 1] (normalized) - only 0->1 transition
+        # Row 1: [1, 0] (normalized) - only 1->0 transition
+        expected = jnp.array([[[0.0, 1.0], [1.0, 0.0]]])
+        np.testing.assert_array_almost_equal(P, expected, decimal=5)
+
 
 class TestBucketData(unittest.TestCase):
     def test_simple_bucketing(self):
