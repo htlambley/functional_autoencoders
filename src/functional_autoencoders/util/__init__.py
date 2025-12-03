@@ -88,27 +88,64 @@ def save_model_results(autoencoder, results, model_dir):
     )  # Use .pkl to ignore in git
 
 
-@partial(jax.vmap, in_axes=(0, None))
-def get_transition_matrix(u_bucket, n):
-    P = jnp.zeros((n, n))
-    for i in range(n):
-        for j in range(n):
-            P = P.at[i, j].set(jnp.sum((u_bucket[1:] == j) & (u_bucket[:-1] == i)))
+def _get_transition_matrix_single(u_bucket, n):
+    """Computes transition matrix from bucket sequence using vectorized one-hot encoding.
+
+    This is more efficient than nested loops as it avoids JAX tracing overhead
+    for each loop iteration and allows the computation to be fully vectorized.
+    """
+    # Create pairs of (from_bucket, to_bucket)
+    from_buckets = u_bucket[:-1].astype(jnp.int32)
+    to_buckets = u_bucket[1:].astype(jnp.int32)
+
+    # Use one-hot encoding to count transitions
+    # Shape: [T-1, n] for from_buckets one-hot
+    from_one_hot = jax.nn.one_hot(from_buckets, n)
+    # Shape: [T-1, n] for to_buckets one-hot
+    to_one_hot = jax.nn.one_hot(to_buckets, n)
+
+    # Outer product sum gives transition counts: P[i, j] = count of i -> j
+    # from_one_hot.T @ to_one_hot gives [n, n] matrix
+    P = jnp.einsum("ti,tj->ij", from_one_hot, to_one_hot)
+
+    # Normalize rows
     row_sums = jnp.sum(P, axis=1)
     P = jnp.where(row_sums[:, None] == 0, jnp.ones_like(P) / n, P / row_sums[:, None])
     return P
 
 
+@partial(jax.vmap, in_axes=(0, None))
+def get_transition_matrix(u_bucket, n):
+    return _get_transition_matrix_single(u_bucket, n)
+
+
+def _bucket_data_single(u, x_locs, y_locs):
+    """Assigns data points to buckets using vectorized operations.
+
+    This is more efficient than nested loops as it uses broadcasting to
+    determine bucket membership in a single vectorized pass.
+    """
+    n_x_bins = len(x_locs) - 1
+    n_y_bins = len(y_locs) - 1
+
+    # Use searchsorted to find which bin each coordinate falls into
+    # searchsorted returns the index where the value would be inserted
+    # We subtract 1 because bins are (x_locs[j], x_locs[j+1]]
+    x_bin_idx = jnp.searchsorted(x_locs, u[:, 0], side="right") - 1
+    y_bin_idx = jnp.searchsorted(y_locs, u[:, 1], side="right") - 1
+
+    # Compute bucket index: i * n_x_bins + j where i is y_bin and j is x_bin
+    bucket_idx = y_bin_idx * n_x_bins + x_bin_idx
+
+    # Mark points outside the valid range as -1
+    valid_x = (x_bin_idx >= 0) & (x_bin_idx < n_x_bins)
+    valid_y = (y_bin_idx >= 0) & (y_bin_idx < n_y_bins)
+    valid = valid_x & valid_y
+
+    u_bucket = jnp.where(valid, bucket_idx, -1)
+    return u_bucket.astype(jnp.float32)
+
+
 @partial(jax.vmap, in_axes=(0, None, None))
 def bucket_data(u, x_locs, y_locs):
-    u_bucket = -jnp.ones(u.shape[0])
-    for i in range(len(y_locs) - 1):
-        for j in range(len(x_locs) - 1):
-            mask = (
-                (u[:, 0] > x_locs[j])
-                & (u[:, 0] <= x_locs[j + 1])
-                & (u[:, 1] > y_locs[i])
-                & (u[:, 1] <= y_locs[i + 1])
-            )
-            u_bucket = jnp.where(mask, i * (len(x_locs) - 1) + j, u_bucket)
-    return u_bucket
+    return _bucket_data_single(u, x_locs, y_locs)

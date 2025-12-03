@@ -24,6 +24,8 @@ def functional_squared_exponential(
     sigma: float, norm: NormFunction = squared_l2_norm
 ) -> MMDKernel:
     """
+    Returns a functional squared exponential kernel.
+
     Arguments:
 
     u : jnp.array of shape [samples, n_evals, out_dim]
