@@ -20,10 +20,7 @@ The `functional_autoencoders` module contains implementations of
 
 **If you want to install the `functional_autoencoders` package** (e.g., to use in your own projects and notebooks): clone the repository and install the package using `pip` with
 
-    git clone https://github.com/htlambley/functional_autoencoders
-    cd functional_autoencoders
-    pip install .
-
+    pip install git+https://github.com/htlambley/functional_autoencoders.git
 
 You can then import the `functional_autoencoders` package in your own scripts and notebooks.
 To get started, why not follow one of our quickstart notebooks:
