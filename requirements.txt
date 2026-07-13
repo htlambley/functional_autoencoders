@@ -13,3 +13,4 @@ dill
 ipywidgets
 scikit-learn
 torch
+tqdm
