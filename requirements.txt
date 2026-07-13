@@ -12,3 +12,4 @@ seaborn
 dill
 ipywidgets
 scikit-learn
+torch
