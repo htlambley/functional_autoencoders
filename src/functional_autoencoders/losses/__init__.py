@@ -10,7 +10,7 @@ import jax.numpy as jnp
 def _diag_normal_unbatched(
     key: jax.random.PRNGKey, means: ArrayLike, log_variances: ArrayLike
 ) -> jax.Array:
-    """Generates a realisation of $N(\mu, \Sigma)$ where $\Sigma$ is a diagonal matrix of variances.
+    r"""Generates a realisation of $N(\mu, \Sigma)$ where $\Sigma$ is a diagonal matrix of variances.
 
     This version is unbatched and generally the batched version `diag_normal` will be more useful.
     """
@@ -22,7 +22,7 @@ _diag_normal = jax.vmap(_diag_normal_unbatched, (0, 0, 0))
 
 
 def _kl_gaussian(means, log_variances):
-    """KL divergence from $N(\mu, \Sigma)$ to $N(0, I)$, when $\Sigma$ is a diagonal matrix of variances.
+    r"""KL divergence from $N(\mu, \Sigma)$ to $N(0, I)$, when $\Sigma$ is a diagonal matrix of variances.
 
     The matrix $\Sigma$ is represented by an array of *log-variances* representing the diagonal of the covariance matrix.
     """
