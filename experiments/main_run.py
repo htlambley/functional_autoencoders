@@ -3,6 +3,8 @@ import sys
 sys.path.append(".")
 sys.path.append("src/")
 
+import numpy as np
+import torch
 import jax
 from time import time
 from experiments.exp_baseline_comparisons.main import (
@@ -45,7 +47,10 @@ def wrap_run(func):
 
 
 if __name__ == "__main__":
-    key = jax.random.PRNGKey(42)
+    seed = 42
+    key = jax.random.PRNGKey(seed)
+    np.random.seed(seed)
+    torch.manual_seed(seed)
 
     start_time = time()
 
