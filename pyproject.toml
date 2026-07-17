@@ -10,7 +10,7 @@ name = "functional_autoencoders"
 version = "1.0.3"  
 description = "Functional autoencoder (FAE) and functional variational autoencoder (FVAE)"
 readme = "README.md"
-requires-python = ">=3.9"
+requires-python = ">=3.12"
 license = {file = "LICENSE"}
 keywords = ["machine learning", "deep learning", "autoencoders"]
 
@@ -37,3 +37,17 @@ dynamic = ["dependencies"]
 
 [tool.setuptools.dynamic]
 dependencies = {file = ["requirements.txt"]}
+
+[tool.poetry.dependencies]
+jax = "^0.11.0"
+jaxlib = "^0.11.0"
+flax = "^0.12.7"
+numpy = "^2.5.1"
+scipy = "^1.18.0"
+h5py = "^3.16.0"
+requests = "^2.34.2"
+matplotlib = "^3.11.0"
+seaborn = "^0.13.2"
+dill = "^0.4.1"
+ipywidgets = "^8.1.8"
+scikit-learn = "^1.9.0"

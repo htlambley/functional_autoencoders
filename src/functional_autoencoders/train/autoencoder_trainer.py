@@ -185,7 +185,7 @@ class AutoencoderTrainer:
     def _get_train_step_fn(self):
         @jax.jit
         def step_func(k, state, batch):
-            u_dec, x_dec, u_enc, x_enc = batch
+            u_enc, x_enc, u_dec, x_dec = batch
             grad_fn = jax.value_and_grad(self.loss_fn, has_aux=True)
             (loss_value, batch_stats), grads = grad_fn(
                 state.params,
