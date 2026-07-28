@@ -34,7 +34,7 @@ class AntiAliasingManagerBase(ABC):
 
 
 class AntiAliasingManagerFourier(AntiAliasingManagerBase):
-    """
+    r"""
     Allows for downsampling and upsampling using a smoothed filter applied in Fourier space.
 
     The low-pass filter is a mollification of an ideal $\mathrm{sinc}$ filter with bandwidth
