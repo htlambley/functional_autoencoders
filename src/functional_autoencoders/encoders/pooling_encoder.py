@@ -12,9 +12,12 @@ from functional_autoencoders.positional_encodings import (
 class MLPPointwiseOperator(nn.Module):
     mlp_dim: int = 128
     mlp_n_hidden_layers: int = 2
+    positional_encoding: PositionalEncoding = IdentityEncoding()
 
     @nn.compact
     def __call__(self, u, x):
+        x_pos = self.positional_encoding(x)
+        u = jnp.concatenate([x_pos, u], axis=-1)
         u = MLP([self.mlp_dim] * self.mlp_n_hidden_layers)(u)
         return u
 
@@ -25,21 +28,10 @@ class MonteCarloIntegralAggregation(nn.Module):
         z = u.mean(axis=1)
         return z
 
-
-class DeepSetPooling(nn.Module):
-    mlp_dim: int = 128
-    mlp_n_hidden_layers: int = 2
-
-    @nn.compact
-    def __call__(self, u, x):
-        z = MLP([self.mlp_dim] * self.mlp_n_hidden_layers)(u)
-        z = z.mean(axis=1)
-        return z
-
 class IdentityMapping(nn.Module):
     @nn.compact
-    def __call__(self, u, x):
-        return u
+    def __call__(self, z):
+        return z
 
 class PoolingEncoder(Encoder):
     r"""
@@ -47,32 +39,26 @@ class PoolingEncoder(Encoder):
 
     In function space, the encoder is the function-to-vector operation
 
-    $$f(u) = p \circ \rho \circ \mathrm{AGG} \circ F \circ \mathrm{PE},$$
+    $$f(u) = p \circ \rho \circ \mathrm{AGG} \circ F,$$
 
     where:
     - $p$ is a learnable linear projection to the latent dimension;
     - $\rho$ is a standard vector-to-vector feedforward neural network;
     - $\mathrm{AGG}$ is a function-to-vector aggregation operator---in the original architecture, $\mathrm{AGG}(u) = \int_{\Omega} u(x) dx$;
     - $F$ is a function-to-function operation---in the original architecture, a standard vector-to-vector neural network applied pointwise;
-    - $\mathrm{PE}$ is a positional encoding, which maps the input $x$ to a higher-dimensional space.
 
     TODO: customise rho, kappa architecture
     TODO: customise discretisation of integral
     """
     latent_dim: int
-    pooling_fn: nn.Module = DeepSetPooling()
-
-    positional_encoding: PositionalEncoding = IdentityEncoding()
     F: nn.Module = MLPPointwiseOperator()
     aggregation: nn.Module = MonteCarloIntegralAggregation()
     rho: nn.Module = IdentityMapping()
 
     @nn.compact
     def __call__(self, u, x, train=False):
-        x_pos = self.positional_encoding(x)
-        u = jnp.concatenate([x_pos, u], axis=-1)
-        u = self.F(u) # TODO
-        z = self.aggregation(u, x_pos)
+        u = self.F(u,x) 
+        z = self.aggregation(u, x)
         z = self.rho(z)
         d_out = self.latent_dim * 2 if self.is_variational else self.latent_dim
         z = nn.Dense(d_out)(z)
