@@ -9,8 +9,8 @@ from functional_autoencoders.domains import Domain, NonlocalTransform
 
 @partial(jax.vmap, in_axes=(0, 0))
 def stochastic_integral(
-    u: ArrayLike,
-    v: ArrayLike,
+    u: jax.Array,
+    v: jax.Array,
 ) -> jax.Array:
     r"""
     Computes an approximation of the Itô stochastic integral
@@ -52,6 +52,7 @@ class RandomlySampledEuclidean(Domain):
 
 class SDE(Domain):
     epsilon: float
+    x0: float
 
     def __init__(self, epsilon: float, x0: float):
         self.epsilon = epsilon
@@ -61,6 +62,9 @@ class SDE(Domain):
         super().__init__(name)
 
     def squared_norm(self, u: ArrayLike, x: ArrayLike) -> jax.Array:
+        u = jnp.asarray(u)
+        x = jnp.asarray(x)
+
         dx = x[:, 1:, 0] - x[:, 0:-1, 0]
         squared_l2_norm = jnp.sum(
             jnp.sum(u[:, :-1, :] * u[:, :-1, :], axis=2) * dx, axis=1
@@ -68,6 +72,10 @@ class SDE(Domain):
         return self.epsilon ** (-1) * squared_l2_norm
 
     def inner_product(self, u: ArrayLike, v: ArrayLike, x: ArrayLike) -> jax.Array:
+        u = jnp.asarray(u)
+        v = jnp.asarray(v)
+        x = jnp.asarray(x)
+
         return self.epsilon ** (-1) * stochastic_integral(u, v)
 
     @property

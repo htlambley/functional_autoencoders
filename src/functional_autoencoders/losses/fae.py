@@ -41,7 +41,11 @@ def _get_loss_fae(
     domain: Domain,
     beta: float,
     subtract_data_norm: bool,
-) -> jax.Array:
+) -> tuple[jax.Array, dict]:
+    u_enc = jnp.asarray(u_enc)
+    x_enc = jnp.asarray(x_enc)
+    u_dec = jnp.asarray(u_dec)
+    x_dec = jnp.asarray(x_dec)
 
     # Encode input functions u
     key, dropout_key = jax.random.split(key)

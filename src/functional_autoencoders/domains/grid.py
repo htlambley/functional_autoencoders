@@ -61,6 +61,9 @@ class ZeroBoundaryConditions(Domain):
         This can be mitigated somewhat by passing an array `u` with double-precision floats, but for very large $s$ or grid sizes
         the results will still be incorrect even with the use of double-precision floats.
         """
+        u = jnp.asarray(u)
+        x = jnp.asarray(x)
+
         input_dimension = x.shape[-1]
         n = round(x.shape[1] ** (1 / input_dimension))
         u_shape = [u.shape[0]] + [n] * input_dimension + [u.shape[-1]]
@@ -85,6 +88,10 @@ class ZeroBoundaryConditions(Domain):
         return jnp.sum(weights * l2_norm_squared, axis=range(1, weights.ndim))
 
     def inner_product(self, u: ArrayLike, v: ArrayLike, x: ArrayLike) -> jax.Array:
+        u = jnp.asarray(u)
+        v = jnp.asarray(v)
+        x = jnp.asarray(x)
+
         input_dimension = x.shape[-1]
         n = round(x.shape[1] ** (1 / input_dimension))
         u_shape = [u.shape[0]] + [n] * input_dimension + [u.shape[-1]]
