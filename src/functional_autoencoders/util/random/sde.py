@@ -3,12 +3,12 @@ from typing import Callable
 from tqdm.auto import tqdm
 
 
-Drift = Callable[[np.array, float], np.array]
-Diffusion = Callable[[np.array, np.array, float], np.array]
+Drift = Callable[[np.ndarray, float], np.ndarray]
+Diffusion = Callable[[np.ndarray, np.ndarray, float], np.ndarray]
 
 
 def euler_maruyama(
-    x0: np.array,
+    x0: np.ndarray,
     drift: Drift,
     diffusion: Diffusion,
     simulation_dt: float,
@@ -24,7 +24,7 @@ def euler_maruyama(
     using the Euler--Maruyama scheme.
 
     Arguments:
-    x0 : np.array of shape [n_realisations, dimension]
+    x0 : np.ndarray of shape [n_realisations, dimension]
         The initial conditions for the SDE. The size of the leading axis determines the number of
         realisations to simulate.
     drift : function (x: [n_realisations, dimension], t: float) -> [n_realisations, dimension]

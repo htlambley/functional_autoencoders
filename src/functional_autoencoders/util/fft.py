@@ -35,6 +35,8 @@ def dst(
     if type != 1:
         raise NotImplementedError()
 
+    x = jnp.asarray(x)
+
     norm = _invert_norm(norm)
     shape = list(x.shape)
     shape[axis] = 1
@@ -71,6 +73,8 @@ def dstn(
     """
     if type != 1:
         raise NotImplementedError()
+
+    x = jnp.asarray(x)
 
     if axes is None:
         axes = range(0, x.ndim)

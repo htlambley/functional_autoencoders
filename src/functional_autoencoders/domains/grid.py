@@ -78,7 +78,7 @@ class ZeroBoundaryConditions(Domain):
         if self.s != 0.0:
             # Compute the weights $(1 + \|n\|^{2})^{s}$; when $s < 0$, nans are sometimes produced
             # as $1 + \|n\|^{2}$ is very large but in that case we replace the weights by an appropriate value.
-            ax = (slice(1, sz + 1) for sz in u.shape[1:-1])
+            ax = tuple(slice(1, sz + 1) for sz in u.shape[1:-1])
             weights = (1.0 + jnp.prod(jnp.mgrid[ax] ** 2, axis=0)) ** self.s
             weights = jnp.nan_to_num(weights, nan=jnp.inf if self.s >= 0 else 0)
             weights = jnp.expand_dims(weights, 0)
@@ -104,7 +104,7 @@ class ZeroBoundaryConditions(Domain):
         vhat = dstn(v, type=1, axes=axes, norm="forward") * (2 ** (d / 2))
 
         if self.s != 0.0:
-            ax = (slice(1, sz + 1) for sz in u.shape[1:-1])
+            ax = tuple(slice(1, sz + 1) for sz in u.shape[1:-1])
             weights = (1.0 + jnp.prod(jnp.mgrid[ax] ** 2, axis=0)) ** (self.s / 2)
             weights = jnp.nan_to_num(weights, nan=jnp.inf if self.s >= 0 else 0)
             weights = jnp.expand_dims(weights, 0)

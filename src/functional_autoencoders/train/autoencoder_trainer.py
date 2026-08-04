@@ -97,6 +97,7 @@ class AutoencoderTrainer:
 
     def _train_one_epoch(self, key, state, step, train_step_fn, epoch, verbose):
         epoch_loss = 0.0
+        i = 0
         for i, batch in enumerate(
             pbar := tqdm(
                 self.train_dataloader,

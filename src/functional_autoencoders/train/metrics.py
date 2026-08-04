@@ -32,6 +32,10 @@ def functional_squared_exponential(
     """
 
     def inner(u: ArrayLike, v: ArrayLike, x: ArrayLike) -> jax.Array:
+        u = jnp.asarray(u)
+        v = jnp.asarray(v)
+        x = jnp.asarray(x)
+
         diff = u - v
         squared_l2_norm = norm(diff, x)
         return jnp.exp(-squared_l2_norm / (2 * sigma**2))
@@ -58,6 +62,9 @@ def maximum_mean_discrepancy(
 
     Gretton et al. (2012). *A kernel two-sample test*. JMLR 13:723--773.
     """
+    u = jnp.asarray(u)
+    v = jnp.asarray(v)
+    x = jnp.asarray(x)
 
     u1 = jnp.repeat(u, u.shape[0], axis=0)
     u2 = jnp.tile(u, (u.shape[0], 1, 1))
@@ -91,6 +98,9 @@ def generalised_maximum_mean_discrepancy(
     References:
     Sriperumbudur et al. (2009). *Kernel choice and classifiability for RKHS embeddings of probability distributions*. NeurIPS.
     """
+    u = jnp.asarray(u)
+    v = jnp.asarray(v)
+    x = jnp.asarray(x)
     return jnp.max(
         jnp.array([maximum_mean_discrepancy(u, v, x, kernel) for kernel in kernels])
     )
@@ -108,6 +118,7 @@ class Metric:
     def __call__(self, state, key, test_dataloader):
         if self.batched:
             metric_value = 0.0
+            i = 0
             for i, batch in enumerate(test_dataloader):
                 key, subkey = jax.random.split(key)
                 metric_value += self.call_batched(state, batch, subkey)
@@ -115,6 +126,12 @@ class Metric:
         else:
             key, subkey = jax.random.split(key)
             return self.call_unbatched(state, test_dataloader, subkey)
+    
+    def call_batched(self, state, batch, key) -> jax.Array:
+        raise NotImplementedError()
+
+    def call_unbatched(self, state, test_dataloader, key) -> jax.Array:
+        raise NotImplementedError()
 
 
 class MSEMetric(Metric):
@@ -131,8 +148,11 @@ class MSEMetric(Metric):
         norm = self.domain.name
         return f"MSE (in {norm})"
 
+    def call_batched(self, state, batch, key) -> jax.Array:
+        return self._call_batched(state, batch, key)
+
     @partial(jax.jit, static_argnums=0)
-    def call_batched(self, state, batch, key):
+    def _call_batched(self, state, batch, key) -> jax.Array:
         u, x, _, _ = batch
 
         vars = {"params": state.params, "batch_stats": state.batch_stats}
@@ -164,7 +184,8 @@ class BatchedMMDMetric(Metric):
     def _mmd(self, trues, samples, x):
         return generalised_maximum_mean_discrepancy(trues, samples, x, self.kernels)
 
-    def call_batched(self, state, u, x, key):
+    def call_batched(self, state, batch, key) -> jax.Array:
+        u, x, _, _ = batch
         samples = self._sample(state, x, u.shape[0], key)
         return self._mmd(u, samples, x)
 
@@ -243,7 +264,7 @@ class TransitionMatrixDiffMetric(Metric):
     def batched(self) -> bool:
         return False
 
-    def call_unbatched(self, state, test_dataloader, key):
+    def call_unbatched(self, state, test_dataloader, key) -> jax.Array:
         u_test_short = jnp.array(test_dataloader.dataset.data["u"][:1000])
 
         key, subkey = jax.random.split(key)
@@ -339,4 +360,4 @@ class PCAHSMetric(Metric):
         pred_scaled_basis = self._pca(samples)[:, :, : self.cutoff_freq]
 
         scaled_basis = test_dataloader.dataset.scaled_basis(x_single)[0]
-        return self._hs(pred_scaled_basis, scaled_basis)
+        return jnp.array([self._hs(pred_scaled_basis, scaled_basis)])

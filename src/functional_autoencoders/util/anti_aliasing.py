@@ -11,20 +11,20 @@ class AntiAliasingManagerBase(ABC):
     """
 
     @abstractmethod
-    def lowpass(self, z, sample_rate_h, sample_rate_w):
+    def lowpass(self, z, sample_rate_h, sample_rate_w) -> np.ndarray:
         pass
 
-    def upsample(self, z, scale_factor=2):
+    def upsample(self, z, scale_factor=2) -> np.ndarray:
         z_up = self._upsample_with_zero_insertion(z, scale_factor)
         z_up_low = self.lowpass(z_up, z.shape[-2], z.shape[-1]) * scale_factor**2
         return z_up_low
 
-    def downsample(self, z, scale_factor=2):
+    def downsample(self, z, scale_factor=2) -> np.ndarray:
         z_low = self.lowpass(z, z.shape[-2] // scale_factor, z.shape[-1] // scale_factor)
         z_low_down = z_low[:, ::scale_factor, ::scale_factor]
         return z_low_down
 
-    def _upsample_with_zero_insertion(self, x, stride=2):
+    def _upsample_with_zero_insertion(self, x, stride=2) -> np.ndarray:
         *cdims, Hin, Win = x.shape
         Hout = stride * Hin
         Wout = stride * Win
@@ -57,7 +57,7 @@ class AntiAliasingManagerFourier(AntiAliasingManagerBase):
 
         back_ishift_masked = np.fft.ifftshift(dft_shift_masked)
 
-        z_filtered = np.fft.ifft2(back_ishift_masked, norm="ortho").real
+        z_filtered = np.real(np.fft.ifft2(back_ishift_masked, norm="ortho"))
         return z_filtered
 
     def _get_blurred_mask(self, z, sample_rate_h, sample_rate_w):
