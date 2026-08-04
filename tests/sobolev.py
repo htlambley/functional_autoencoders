@@ -3,6 +3,7 @@ import sys
 sys.path.append("../src")
 
 import unittest
+import numpy as np
 import jax.numpy as jnp
 
 from functional_autoencoders.domains.grid import ZeroBoundaryConditions
@@ -13,7 +14,13 @@ def relative_error(a, b):
 
 
 def assert_scalar_close(testcase, actual, expected, places=7):
-    testcase.assertAlmostEqual(float(jnp.asarray(actual)), float(expected), places=places)
+    actual = np.asarray(actual)
+    expected = np.asarray(expected)
+
+    if actual.ndim == 0 and expected.ndim == 0:
+        testcase.assertAlmostEqual(float(actual), float(expected), places=places)
+    else:
+        np.testing.assert_allclose(actual, expected, atol=10 ** (-places), rtol=0)
 
 
 class SobolevNorm(unittest.TestCase):
