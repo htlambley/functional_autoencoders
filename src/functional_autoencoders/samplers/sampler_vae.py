@@ -11,3 +11,7 @@ class SamplerVAE(SamplerBase):
         latents = jax.random.normal(key, [x.shape[0], latent_dim])
         decoded = self.autoencoder.decode(self.state, latents, x, train=False)
         return decoded
+
+    def fit(self, train_dataloader):
+        # No fitting is required for the VAE sampler since it samples from a standard normal distribution.
+        pass

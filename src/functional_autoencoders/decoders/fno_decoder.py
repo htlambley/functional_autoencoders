@@ -23,7 +23,8 @@ class FNODecoder(Decoder):
     n_modes_per_dim: int = 12
     fno_args: dict = field(default_factory=dict)
 
-    def _forward(self, z, x, train=False):
+    @nn.compact
+    def __call__(self, z, x, train=False):
         n_modes = [[self.n_modes_per_dim] * x.shape[-1]] * self.n_layers
         lifting_features = [self.hidden_dim]
         projection_features = [self.hidden_dim]

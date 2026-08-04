@@ -1,6 +1,7 @@
 import jax
 from jax.typing import ArrayLike
 import jax.numpy as jnp
+import flax.linen as nn
 from typing import Sequence, Callable
 from functional_autoencoders.decoders import Decoder
 from functional_autoencoders.positional_encodings import (
@@ -24,10 +25,11 @@ class NonlinearDecoder(Decoder):
     features: Sequence[int] = (128, 128, 128)
     positional_encoding: PositionalEncoding = IdentityEncoding()
     mlp_args: dict = field(default_factory=dict)
-    post_activation: Callable[[ArrayLike], jax.Array] = lambda x: x
+    post_activation: Callable[[ArrayLike], jax.Array] = lambda x: jnp.array(x)
     concat_method: str = "initial"
 
-    def _forward(self, z, x, train=False):
+    @nn.compact
+    def __call__(self, z, x, train=False):
         x = self.positional_encoding(x)
         y = self._mlp_forward(z, x)
         y = self.post_activation(y)

@@ -39,7 +39,7 @@ class Autoencoder(nn.Module):
 
     @nn.compact
     def __call__(self, u, x_enc, x_dec, train=False):
-        z = self.encoder(u, x_enc, train)
+        z = self.encoder(u, x_enc, train=train)
 
         if self.encoder.is_variational:
             latent_dim = self.get_latent_dim()

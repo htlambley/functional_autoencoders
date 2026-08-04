@@ -9,7 +9,7 @@ class Encoder(nn.Module):
 
     is_variational: bool
 
-    def __call__(self, u, x):
+    def __call__(self, u, x, train=False):
         raise NotImplementedError()
 
     def get_latent_dim(self):

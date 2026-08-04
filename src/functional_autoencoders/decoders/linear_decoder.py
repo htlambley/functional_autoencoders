@@ -1,5 +1,4 @@
 import jax.numpy as jnp
-import flax.linen as nn
 from typing import Sequence
 from dataclasses import field
 from functional_autoencoders.decoders import Decoder
@@ -32,7 +31,7 @@ class LinearDecoder(Decoder):
     def setup(self):
         self.net = MLP([*self.features, self.n_basis * self.out_dim], **self.mlp_args)
 
-    def _forward(self, z, x, train=False):
+    def __call__(self, z, x, train=False):
         basis = self.basis(x)
         return jnp.einsum("ij,...ikjl->ikl", z, basis)
 

@@ -16,7 +16,8 @@ class CNNDecoder(Decoder):
     final_strides: Sequence[int] = (1,)
     mlp_features: Sequence[int] = (128, 128, 128)
 
-    def _forward(self, z, x, train=False):
+    @nn.compact
+    def __call__(self, z, x, train=False):
         u = MLP([*self.mlp_features, self.grid_pts_in**2 * self.c_in])(z)
         u = jnp.reshape(u, (-1, self.grid_pts_in, self.grid_pts_in, self.c_in))
 

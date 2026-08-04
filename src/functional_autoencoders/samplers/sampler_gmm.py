@@ -1,3 +1,4 @@
+import numpy as np
 import jax.numpy as jnp
 from sklearn import mixture
 from functional_autoencoders.samplers import SamplerBase
@@ -19,11 +20,11 @@ class SamplerGMM(SamplerBase):
         )
 
         z_dataset = self._get_z_dataset(train_dataloader)
-        gmm.fit(z_dataset)
+        gmm.fit(np.asarray(z_dataset))
 
         self.gmm = gmm
 
-    def sample(self, x):
+    def sample(self, x, key):
         z_samples, _ = self.gmm.sample(x.shape[0])
         u_samples = self.autoencoder.decode(self.state, z_samples, x, train=False)
         return u_samples

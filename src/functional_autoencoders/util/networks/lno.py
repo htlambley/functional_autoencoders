@@ -1,13 +1,13 @@
 import flax.linen as nn
 import jax.numpy as jnp
 from typing import Sequence
-from functional_autoencoders.util.networks import MLP, Initializer
+from functional_autoencoders.util.networks import MLP
 from functional_autoencoders.domains import Domain
 
 
 class LNOLayer(nn.Module):
     n_rank: int
-    R_init: Initializer = nn.initializers.glorot_normal()
+    R_init = nn.initializers.glorot_normal()
     act = nn.gelu
     mlp_hidden_features: Sequence[int] = (128, 128)
 
@@ -32,8 +32,8 @@ class LNO(nn.Module):
     lifting_features: Sequence[int]
     projection_features: Sequence[int]
     act = None
-    R_init: Initializer = None
-    mlp_init: Initializer = None
+    R_init = None
+    mlp_init = None
     lno_mlp_hidden_features: Sequence[int] = (128, 128)
 
     @nn.compact

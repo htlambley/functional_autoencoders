@@ -3,5 +3,8 @@ class SamplerBase:
         self.autoencoder = autoencoder
         self.state = state
 
-    def sample(self, x):
+    def sample(self, x, key):
+        raise NotImplementedError()
+
+    def fit(self, train_dataloader):
         raise NotImplementedError()

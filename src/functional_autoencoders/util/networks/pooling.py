@@ -1,6 +1,6 @@
 import jax.numpy as jnp
 import flax.linen as nn
-from functional_autoencoders.util.networks import MLP, MultiheadLinearAttentionLayer
+from functional_autoencoders.util.networks import MLP
 
 
 class MLPKernelPooling(nn.Module):
@@ -18,23 +18,6 @@ class MLPKernelPooling(nn.Module):
 
         z = jnp.einsum("...xy,...y->...x", kernel_evals, u)
         z = z.mean(axis=range(1, z.ndim - 1))
-        return z
-
-
-class MultiheadAttentionPooling(nn.Module):
-    n_heads: int = 2
-    mlp_dim: int = 128
-    mlp_n_hidden_layers: int = 2
-
-    @nn.compact
-    def __call__(self, u, x):
-        indices = jnp.arange(1, dtype=jnp.int32)
-        z = MLP([self.mlp_dim] * self.mlp_n_hidden_layers)(u)
-        s = nn.Embed(1, z.shape[-1])(indices)[None, :]
-        s = jnp.repeat(s, z.shape[0], axis=0)
-
-        z = MultiheadLinearAttentionLayer(n_heads=self.n_heads)(s, z, z)
-        z = z[:, 0, :]
         return z
 
 

@@ -4,14 +4,14 @@ import string
 import jax.numpy as jnp
 
 from functional_autoencoders.domains import Domain
-from functional_autoencoders.util.networks import MLP, Initializer
+from functional_autoencoders.util.networks import MLP
 from functional_autoencoders.domains import Domain
 
 
 class FNOLayer(nn.Module):
     n_modes: Sequence[int]
     domain: Domain
-    R_init: Initializer = nn.initializers.glorot_normal()
+    R_init = nn.initializers.glorot_normal()
     act = nn.gelu
 
     @nn.compact
@@ -56,8 +56,8 @@ class FNO(nn.Module):
     projection_features: Sequence[int]
     domain: Domain
     act = None
-    R_init: Initializer = None
-    mlp_init: Initializer = None
+    R_init = None
+    mlp_init = None
     mlp_bias: bool = True
 
     @nn.compact
