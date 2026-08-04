@@ -347,7 +347,7 @@ class PCAHSMetric(Metric):
         # be extended to support deterministic autoencoders.
         assert self.model.encoder.is_variational
 
-        _, x = next(iter(test_dataloader))
+        _, x, _, _ = next(iter(test_dataloader))
         x_single = jnp.expand_dims(x[0], 0)
 
         tiling_shape = [self.n_samples] + [1] * (x_single.ndim - 1)

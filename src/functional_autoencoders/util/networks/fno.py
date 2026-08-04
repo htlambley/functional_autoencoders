@@ -5,7 +5,6 @@ import jax.numpy as jnp
 
 from functional_autoencoders.domains import Domain
 from functional_autoencoders.util.networks import MLP
-from functional_autoencoders.domains import Domain
 
 
 class FNOLayer(nn.Module):
