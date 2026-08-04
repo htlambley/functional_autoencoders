@@ -1,5 +1,5 @@
 import jax
-import flax
+from flax.core import FrozenDict
 from flax.training import train_state
 
 
@@ -8,5 +8,5 @@ class TrainNanError(Exception):
 
 
 class TrainState(train_state.TrainState):
-    batch_stats: flax.core.FrozenDict
+    batch_stats: FrozenDict
     key: jax.Array

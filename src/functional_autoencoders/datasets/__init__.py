@@ -78,6 +78,20 @@ class RandomMissingData:
         return u, x
 
 
+def _get_dataloader(dataset_class, train, transform, dataset_kwargs, batch_size, num_workers, shuffle):
+    dataset = dataset_class(
+        train=train,
+        transform=transform,
+        **dataset_kwargs,
+    )
+    dataloader = NumpyLoader(
+        dataset,
+        batch_size=batch_size,
+        num_workers=num_workers,
+        shuffle=shuffle,
+    )
+    return dataloader
+
 def get_dataloaders(
     dataset_class,
     batch_size=32,
@@ -88,38 +102,12 @@ def get_dataloaders(
     which: Literal["both", "train", "test"] = "both",
     **dataset_kwargs,
 ):
-    if which != "test":
-        train_dataset = dataset_class(
-            train=True,
-            transform=transform_train,
-            **dataset_kwargs,
-        )
-        train_dataloader = NumpyLoader(
-            train_dataset,
-            batch_size=batch_size,
-            num_workers=num_workers,
-            shuffle=shuffle_train,
-        )
-
-    if which != "train":
-        test_dataset = dataset_class(
-            train=False,
-            transform=transform_test,
-            **dataset_kwargs,
-        )
-        test_dataloader = NumpyLoader(
-            test_dataset,
-            batch_size=batch_size,
-            num_workers=num_workers,
-            shuffle=False,
-        )
-
     if which == "train":
-        return train_dataloader
+        return _get_dataloader(dataset_class, train=True, transform=transform_train, dataset_kwargs=dataset_kwargs, batch_size=batch_size, num_workers=num_workers, shuffle=shuffle_train)
     elif which == "test":
-        return test_dataloader
+        return _get_dataloader(dataset_class, train=False, transform=transform_test, dataset_kwargs=dataset_kwargs, batch_size=batch_size, num_workers=num_workers, shuffle=False)
     else:
-        return train_dataloader, test_dataloader
+        return _get_dataloader(dataset_class, train=True, transform=transform_train, dataset_kwargs=dataset_kwargs, batch_size=batch_size, num_workers=num_workers, shuffle=shuffle_train), _get_dataloader(dataset_class, train=False, transform=transform_test, dataset_kwargs=dataset_kwargs, batch_size=batch_size, num_workers=num_workers, shuffle=False)
 
 
 # `_numpy_collate` and `NumpyLoader` are based on the JAX notebook https://jax.readthedocs.io/en/latest/notebooks/Neural_Network_and_Data_Loading.html
@@ -248,6 +236,8 @@ class DownloadableDataset(Dataset, OnDiskDataset):
         The default search path is `current_working_directory/data`, and
         `data_base` alters the base path relative to `current_working_directory`.
     """
+    data_url: str
+    download_filename: str
 
     def __init__(
         self,

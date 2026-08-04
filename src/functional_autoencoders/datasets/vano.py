@@ -115,7 +115,7 @@ class GRF(GenerableDataset):
         return self.data["d"]
 
     @property
-    def x(self) -> np.array:
+    def x(self) -> np.ndarray:
         return self.data["x"][:]
 
     @property
@@ -206,5 +206,5 @@ class GaussianDensities(GenerableDataset):
             return u, x, u, x
 
     @property
-    def x(self) -> np.array:
+    def x(self) -> np.ndarray:
         return self.data["x"][:]

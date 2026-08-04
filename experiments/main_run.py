@@ -48,7 +48,7 @@ def wrap_run(func):
 
 if __name__ == "__main__":
     seed = 42
-    key = jax.random.PRNGKey(seed)
+    key = jax.random.key(seed)
     np.random.seed(seed)
     torch.manual_seed(seed)
 

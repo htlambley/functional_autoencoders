@@ -3,6 +3,7 @@ import sys
 sys.path.append("../src")
 
 import unittest
+import numpy as np
 import jax.numpy as jnp
 
 from functional_autoencoders.domains.grid import ZeroBoundaryConditions
@@ -12,6 +13,16 @@ def relative_error(a, b):
     return jnp.sum((a - b) ** 2) / jnp.sum(a**2)
 
 
+def assert_scalar_close(testcase, actual, expected, places=7):
+    actual = np.asarray(actual)
+    expected = np.asarray(expected)
+
+    if actual.ndim == 0 and expected.ndim == 0:
+        testcase.assertAlmostEqual(float(actual), float(expected), places=places)
+    else:
+        np.testing.assert_allclose(actual, expected, atol=10 ** (-places), rtol=0)
+
+
 class SobolevNorm(unittest.TestCase):
     def test_sin(self):
         n_pts = 100
@@ -19,15 +30,9 @@ class SobolevNorm(unittest.TestCase):
         x = jnp.sqrt(2) * jnp.sin(jnp.pi * pts)
         x = jnp.reshape(x, (1, -1, 1))
         pts = jnp.reshape(pts, (1, -1, 1))
-        self.assertAlmostEqual(
-            ZeroBoundaryConditions(0).squared_norm(x, pts), 1.0, places=3
-        )
-        self.assertAlmostEqual(
-            ZeroBoundaryConditions(1).squared_norm(x, pts), 2.0, places=3
-        )
-        self.assertAlmostEqual(
-            ZeroBoundaryConditions(2).squared_norm(x, pts), 4.0, places=3
-        )
+        assert_scalar_close(self, ZeroBoundaryConditions(0).squared_norm(x, pts), 1.0, places=3)
+        assert_scalar_close(self, ZeroBoundaryConditions(1).squared_norm(x, pts), 2.0, places=3)
+        assert_scalar_close(self, ZeroBoundaryConditions(2).squared_norm(x, pts), 4.0, places=3)
 
     def test_batched(self):
         n_pts = 100
@@ -37,24 +42,21 @@ class SobolevNorm(unittest.TestCase):
         x = jnp.tile(x, (32, 1, 1))
         pts = jnp.reshape(pts, (1, -1, 1))
         pts = jnp.tile(pts, (32, 1, 1))
-        self.assertAlmostEqual(
-            jnp.sum(
-                ZeroBoundaryConditions(0).squared_norm(x, pts) - 1.0 * jnp.ones((32,))
-            ),
+        assert_scalar_close(
+            self,
+            jnp.sum(ZeroBoundaryConditions(0).squared_norm(x, pts) - 1.0 * jnp.ones((32,))),
             0.0,
             places=3,
         )
-        self.assertAlmostEqual(
-            jnp.sum(
-                ZeroBoundaryConditions(1).squared_norm(x, pts) - 2.0 * jnp.ones((32,))
-            ),
+        assert_scalar_close(
+            self,
+            jnp.sum(ZeroBoundaryConditions(1).squared_norm(x, pts) - 2.0 * jnp.ones((32,))),
             0.0,
             places=3,
         )
-        self.assertAlmostEqual(
-            jnp.sum(
-                ZeroBoundaryConditions(2).squared_norm(x, pts) - 4.0 * jnp.ones((32,))
-            ),
+        assert_scalar_close(
+            self,
+            jnp.sum(ZeroBoundaryConditions(2).squared_norm(x, pts) - 4.0 * jnp.ones((32,))),
             0.0,
             places=3,
         )
@@ -67,17 +69,15 @@ class SobolevNorm(unittest.TestCase):
         x = jnp.tile(x, (32, 1, 2))
         pts = jnp.reshape(pts, (1, -1, 1))
         pts = jnp.tile(pts, (32, 1, 1))
-        self.assertAlmostEqual(
-            jnp.sum(
-                ZeroBoundaryConditions(0).squared_norm(x, pts) - 2.0 * jnp.ones((32,))
-            ),
+        assert_scalar_close(
+            self,
+            jnp.sum(ZeroBoundaryConditions(0).squared_norm(x, pts) - 2.0 * jnp.ones((32,))),
             0.0,
             places=3,
         )
-        self.assertAlmostEqual(
-            jnp.sum(
-                ZeroBoundaryConditions(1).squared_norm(x, pts) - 4.0 * jnp.ones((32,))
-            ),
+        assert_scalar_close(
+            self,
+            jnp.sum(ZeroBoundaryConditions(1).squared_norm(x, pts) - 4.0 * jnp.ones((32,))),
             0.0,
             places=3,
         )
@@ -90,15 +90,9 @@ class SobolevInnerProd(unittest.TestCase):
         x = jnp.sqrt(2) * jnp.sin(jnp.pi * pts)
         x = jnp.reshape(x, (1, -1, 1))
         pts = jnp.reshape(pts, (1, -1, 1))
-        self.assertAlmostEqual(
-            ZeroBoundaryConditions(0).inner_product(x, x, pts), 1.0, places=3
-        )
-        self.assertAlmostEqual(
-            ZeroBoundaryConditions(1).inner_product(x, x, pts), 2.0, places=3
-        )
-        self.assertAlmostEqual(
-            ZeroBoundaryConditions(2).inner_product(x, x, pts), 4.0, places=3
-        )
+        assert_scalar_close(self, ZeroBoundaryConditions(0).inner_product(x, x, pts), 1.0, places=3)
+        assert_scalar_close(self, ZeroBoundaryConditions(1).inner_product(x, x, pts), 2.0, places=3)
+        assert_scalar_close(self, ZeroBoundaryConditions(2).inner_product(x, x, pts), 4.0, places=3)
 
     def test_2d_out_dim(self):
         n_pts = 100
@@ -108,19 +102,15 @@ class SobolevInnerProd(unittest.TestCase):
         x = jnp.tile(x, (32, 1, 2))
         pts = jnp.reshape(pts, (1, -1, 1))
         pts = jnp.tile(pts, (32, 1, 1))
-        self.assertAlmostEqual(
-            jnp.sum(
-                ZeroBoundaryConditions(0).inner_product(x, x, pts)
-                - 2.0 * jnp.ones((32,))
-            ),
+        assert_scalar_close(
+            self,
+            jnp.sum(ZeroBoundaryConditions(0).inner_product(x, x, pts) - 2.0 * jnp.ones((32,))),
             0.0,
             places=3,
         )
-        self.assertAlmostEqual(
-            jnp.sum(
-                ZeroBoundaryConditions(1).inner_product(x, x, pts)
-                - 4.0 * jnp.ones((32,))
-            ),
+        assert_scalar_close(
+            self,
+            jnp.sum(ZeroBoundaryConditions(1).inner_product(x, x, pts) - 4.0 * jnp.ones((32,))),
             0.0,
             places=3,
         )
@@ -132,7 +122,8 @@ class SobolevInnerProd(unittest.TestCase):
         x = jnp.reshape(x, (1, -1, 1))
         y = jnp.zeros_like(x)
         pts = jnp.reshape(pts, (1, -1, 1))
-        self.assertAlmostEqual(
+        assert_scalar_close(
+            self,
             ZeroBoundaryConditions(1.1).inner_product(x, y, pts),
             0.0,
             places=3,
@@ -145,7 +136,8 @@ class SobolevInnerProd(unittest.TestCase):
         x = jnp.reshape(x, (1, -1, 1))
         pts = jnp.reshape(pts, (1, -1, 1))
         domain = ZeroBoundaryConditions(-0.9)
-        self.assertAlmostEqual(
+        assert_scalar_close(
+            self,
             domain.inner_product(x, x, pts),
             domain.squared_norm(x, pts),
             places=3,

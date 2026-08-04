@@ -15,3 +15,5 @@ todo.txt
 *.pdf
 experiments/scripts/dirac/*results*.yaml
 *.pkl
+poetry.lock
+.venv

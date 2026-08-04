@@ -43,7 +43,7 @@ def get_loss_vano_fn(
 
 def _get_loss_vano(
     params,
-    key: jax.random.PRNGKey,
+    key: jax.Array,
     batch_stats,
     u_enc: ArrayLike,
     x_enc: ArrayLike,
@@ -55,7 +55,11 @@ def _get_loss_vano(
     beta: float,
     normalised_inner_prod: bool,
     rescale_by_norm: bool,
-) -> jax.Array:
+) -> tuple[jax.Array, dict]:
+    u_enc = jnp.asarray(u_enc)
+    x_enc = jnp.asarray(x_enc)
+    u_dec = jnp.asarray(u_dec)
+    x_dec = jnp.asarray(x_dec)
 
     scales = jnp.ones((u_dec.shape[0],))
     if rescale_by_norm:

@@ -3,7 +3,7 @@ from jax.typing import ArrayLike
 import jax.numpy as jnp
 from functools import partial
 from functional_autoencoders.autoencoder import Autoencoder
-from functional_autoencoders.domains import Domain
+from functional_autoencoders.domains.off_grid import SDE
 from functional_autoencoders.losses import (
     _diag_normal,
     _kl_gaussian,
@@ -13,7 +13,7 @@ from functional_autoencoders.losses import (
 
 def get_loss_fvae_sde_fn(
     autoencoder: Autoencoder,
-    domain: Domain,
+    domain: SDE,
     n_monte_carlo_samples: int = 4,
     beta: float = 1,
     theta: float = 0.0,
@@ -38,7 +38,7 @@ def get_loss_fvae_sde_fn(
 
 def _get_loss_fvae_sde(
     params,
-    key: jax.random.PRNGKey,
+    key: jax.Array,
     batch_stats,
     u_enc: ArrayLike,
     x_enc: ArrayLike,
@@ -46,12 +46,17 @@ def _get_loss_fvae_sde(
     x_dec: ArrayLike,
     encode_fn,
     decode_fn,
-    domain: Domain,
+    domain: SDE,
     n_monte_carlo_samples: int,
     beta: float,
     theta: float,
     zero_penalty: float,
-) -> jax.Array:
+) -> tuple[jax.Array, dict]:
+    u_enc = jnp.asarray(u_enc)
+    x_enc = jnp.asarray(x_enc)
+    u_dec = jnp.asarray(u_dec)
+    x_dec = jnp.asarray(x_dec)
+
     if x_enc.shape[-1] != 1:
         raise NotImplementedError()
 

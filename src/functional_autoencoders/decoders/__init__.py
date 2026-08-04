@@ -7,12 +7,7 @@ class Decoder(nn.Module):
     For general comments, see `Autoencoder` documentation.
     """
 
-    @nn.compact
     def __call__(self, z, x, train=False):
-        u = self._forward(z, x, train)
-        return u
-
-    def _forward(self, z, x):
         raise NotImplementedError()
 
 

@@ -29,10 +29,10 @@ class DST(unittest.TestCase):
         yhat_ours = dst(y, type=1, norm="forward")
         yhat_true = scipy.fft.dst(y, type=1, norm="forward")
         self.assertTrue(relative_error(yhat_true, yhat_ours) < eps)
-        self.assertAlmostEqual(yhat_ours[0], 1.0)
-        self.assertAlmostEqual(yhat_ours[1], 0.0)
-        self.assertAlmostEqual(yhat_ours[2], 1.0)
-        self.assertAlmostEqual(yhat_ours[3], 0.0)
+        self.assertAlmostEqual(float(yhat_ours[0]), 1.0)
+        self.assertAlmostEqual(float(yhat_ours[1]), 0.0)
+        self.assertAlmostEqual(float(yhat_ours[2]), 1.0)
+        self.assertAlmostEqual(float(yhat_ours[3]), 0.0)
 
     def test_1d_rand(self):
         y = np.random.randn(5001)

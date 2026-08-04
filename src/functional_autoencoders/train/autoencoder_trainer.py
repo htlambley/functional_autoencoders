@@ -54,7 +54,7 @@ class AutoencoderTrainer:
         Fits the `AutoencoderTrainer` to the training data provided by `train_dataloader` in the constructor,
         using the validation data from `test_dataloader` in the constructor to compute evaluation metrics.
 
-        :param key: JAX pseudorandom number generator key (`jax.random.PRNGKey`)
+        :param key: JAX pseudorandom number generator key (`jax.random.key`)
         :param lr: learning rate
         :param lr_decay_step: along with `lr_decay_factor`, parameters for the [`optax.exponential_decay`](https://optax.readthedocs.io/en/latest/api/optimizer_schedules.html#optax.exponential_decay) learning-rate scheduler
         :param lr_decay_factor: see `lr_decay_step`
@@ -97,6 +97,7 @@ class AutoencoderTrainer:
 
     def _train_one_epoch(self, key, state, step, train_step_fn, epoch, verbose):
         epoch_loss = 0.0
+        i = 0
         for i, batch in enumerate(
             pbar := tqdm(
                 self.train_dataloader,
