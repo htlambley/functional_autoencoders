@@ -25,7 +25,7 @@ def _compute_torus_covariance_operator_sqrt_eigenvalues(shape, tau=3, d=2):
     return eigs
 
 
-def torus_grf(key: jax.random.PRNGKey, n, shape, out_dim=1, tau=3, d=2, method="fft"):
+def torus_grf(key: jax.Array, n, shape, out_dim=1, tau=3, d=2, method="fft"):
     r"""Returns realisations of a mean-zero Gaussian random field on an $n$-dimensional torus with Matérn-type covariance operator and periodic boundary conditions.
 
     This function generates realisations of a mean-zero Gaussian random field on $X = L^{2}(\Omega; \mathbb{C})$, with
@@ -92,7 +92,7 @@ def _compute_dirichlet_covariance_operator_sqrt_eigenvalues(
 
 
 def dirichlet_grf(
-    key: jax.random.PRNGKey,
+    key: jax.Array,
     n,
     shape,
     out_dim=1,

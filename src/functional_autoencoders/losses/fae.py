@@ -30,7 +30,7 @@ def get_loss_fae_fn(
 
 def _get_loss_fae(
     params,
-    key: jax.random.PRNGKey,
+    key: jax.Array,
     batch_stats,
     u_enc: ArrayLike,
     x_enc: ArrayLike,

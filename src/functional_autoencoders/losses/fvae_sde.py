@@ -38,7 +38,7 @@ def get_loss_fvae_sde_fn(
 
 def _get_loss_fvae_sde(
     params,
-    key: jax.random.PRNGKey,
+    key: jax.Array,
     batch_stats,
     u_enc: ArrayLike,
     x_enc: ArrayLike,
