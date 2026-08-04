@@ -15,7 +15,7 @@ def _index_to_frequency(idx, max):
     return ret
 
 
-def _compute_torus_covariance_operator_sqrt_eigenvalues(shape, tau=3, d=2):
+def _compute_torus_covariance_operator_sqrt_eigenvalues(shape, tau=3.0, d=2.0):
     eigs = np.zeros(shape)
     for index, _ in np.ndenumerate(eigs):
         idx = _index_to_frequency(index, shape)
@@ -25,7 +25,7 @@ def _compute_torus_covariance_operator_sqrt_eigenvalues(shape, tau=3, d=2):
     return eigs
 
 
-def torus_grf(key: jax.Array, n, shape, out_dim=1, tau=3, d=2, method="fft"):
+def torus_grf(key: jax.Array | None, n, shape, out_dim=1, tau=3.0, d=2.0, method="fft"):
     r"""Returns realisations of a mean-zero Gaussian random field on an $n$-dimensional torus with Matérn-type covariance operator and periodic boundary conditions.
 
     This function generates realisations of a mean-zero Gaussian random field on $X = L^{2}(\Omega; \mathbb{C})$, with
@@ -57,10 +57,10 @@ def torus_grf(key: jax.Array, n, shape, out_dim=1, tau=3, d=2, method="fft"):
     """
     if method == "fft":
         if key is not None:
-            key, subkey = jax.random.split(key)
+            key1, key2 = jax.random.split(key)
             zhat = jax.random.normal(
-                key, (n, *shape, out_dim)
-            ) + 1j * jax.random.normal(subkey, (n, *shape, out_dim))
+                key1, (n, *shape, out_dim)
+            ) + 1j * jax.random.normal(key2, (n, *shape, out_dim))
         else:
             zhat = np.random.randn(n, *shape, out_dim) + 1j * np.random.randn(
                 n, *shape, out_dim
@@ -74,7 +74,7 @@ def torus_grf(key: jax.Array, n, shape, out_dim=1, tau=3, d=2, method="fft"):
 
 
 def _compute_dirichlet_covariance_operator_sqrt_eigenvalues(
-    shape, tau=3, d=2, even_powers_only=False
+    shape, tau=3.0, d=2.0, even_powers_only=False
 ):
     if len(shape) != 1 and even_powers_only:
         raise NotImplementedError("even_powers_only implemented only in 1D")
@@ -92,12 +92,12 @@ def _compute_dirichlet_covariance_operator_sqrt_eigenvalues(
 
 
 def dirichlet_grf(
-    key: jax.Array,
+    key: jax.Array | None,
     n,
     shape,
     out_dim=1,
-    tau=3,
-    d=2,
+    tau=3.0,
+    d=2.0,
     method="dst",
     even_powers_only=False,
 ):

@@ -31,9 +31,9 @@ class LNO(nn.Module):
     n_ranks: Sequence[int]
     lifting_features: Sequence[int]
     projection_features: Sequence[int]
-    act: Callable = None
-    R_init: Callable = None
-    mlp_init: Callable = None
+    act: Callable | None = None
+    R_init: Callable | None = None
+    mlp_init: Callable | None = None
     lno_mlp_hidden_features: Sequence[int] = (128, 128)
 
     @nn.compact

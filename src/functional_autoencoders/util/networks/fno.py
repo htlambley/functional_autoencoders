@@ -12,7 +12,7 @@ class FNOLayer(nn.Module):
     n_modes: Sequence[int]
     domain: Domain
     R_init: Callable = nn.initializers.glorot_normal()
-    act = nn.gelu
+    act: Callable = nn.gelu
 
     @nn.compact
     def __call__(self, u):
@@ -55,9 +55,9 @@ class FNO(nn.Module):
     lifting_features: Sequence[int]
     projection_features: Sequence[int]
     domain: Domain
-    act: Callable = None
-    R_init: Callable = None
-    mlp_init: Callable = None
+    act: Callable | None = None
+    R_init: Callable | None = None
+    mlp_init: Callable | None = None
     mlp_bias: bool = True
 
     @nn.compact
