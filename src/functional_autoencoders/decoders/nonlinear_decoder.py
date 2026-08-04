@@ -39,7 +39,7 @@ class NonlinearDecoder(Decoder):
         if self.concat_method == "initial":
             return self._mlp_initial_concat(z, x)
         else:
-            raise ValueError(f"Unknown method {self.method}")
+            raise ValueError(f"Unknown method {self.concat_method}")
 
     def _mlp_initial_concat(self, z, x):
         zx = self._concat(z, x)

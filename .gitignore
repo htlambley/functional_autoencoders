@@ -16,3 +16,4 @@ todo.txt
 experiments/scripts/dirac/*results*.yaml
 *.pkl
 poetry.lock
+.venv

@@ -1,5 +1,5 @@
 import flax.linen as nn
-from typing import Sequence
+from typing import Callable, Sequence
 import string
 import jax.numpy as jnp
 
@@ -11,7 +11,7 @@ from functional_autoencoders.domains import Domain
 class FNOLayer(nn.Module):
     n_modes: Sequence[int]
     domain: Domain
-    R_init = nn.initializers.glorot_normal()
+    R_init: Callable = nn.initializers.glorot_normal()
     act = nn.gelu
 
     @nn.compact
@@ -55,9 +55,9 @@ class FNO(nn.Module):
     lifting_features: Sequence[int]
     projection_features: Sequence[int]
     domain: Domain
-    act = None
-    R_init = None
-    mlp_init = None
+    act: Callable = None
+    R_init: Callable = None
+    mlp_init: Callable = None
     mlp_bias: bool = True
 
     @nn.compact

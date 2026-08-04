@@ -26,6 +26,7 @@ class SamplerGMM(SamplerBase):
 
     def sample(self, x, key):
         z_samples, _ = self.gmm.sample(x.shape[0])
+        z_samples = jnp.asarray(z_samples)
         u_samples = self.autoencoder.decode(self.state, z_samples, x, train=False)
         return u_samples
 

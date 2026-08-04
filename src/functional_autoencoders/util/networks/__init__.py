@@ -20,8 +20,8 @@ class MLP(nn.Module):
     module.
     """
 
-    kernel_init = None
-    bias_init = None
+    kernel_init: Callable = None
+    bias_init: Callable = None
     use_bias: bool = True
     """
     Enables the use of a bias for each layer, including the output layer.
