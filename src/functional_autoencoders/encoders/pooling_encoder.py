@@ -31,6 +31,12 @@ class MonteCarloIntegralAggregation(nn.Module):
         z = u.mean(axis=1)
         return z
 
+class MaxAggregation(nn.Module):
+    @nn.compact
+    def __call__(self, u, x):
+        z = u.max(axis=1)
+        return z
+
 class IdentityMapping(nn.Module):
     @nn.compact
     def __call__(self, z):
@@ -50,7 +56,7 @@ class PoolingEncoder(Encoder):
     - $F$ is a function-to-function operation.
 
     This module allows $F$ to be specified using the `F` argument, $\mathrm{AGG}$ to be specified using the `aggregation` argument,
-    and parametrises $\rho$ as
+    and, assuming `use_dense=True`, parametrises $\rho$ as
 
     $$ \rho(z) = W \tau(z) + b, $$
 
@@ -81,6 +87,7 @@ class PoolingEncoder(Encoder):
     F: nn.Module = MLPPointwiseOperator()
     aggregation: nn.Module = MonteCarloIntegralAggregation()
     tau: nn.Module = IdentityMapping()
+    use_dense: bool = True
 
     @nn.compact
     def __call__(self, u, x, train=False):
@@ -88,5 +95,6 @@ class PoolingEncoder(Encoder):
         z = self.aggregation(u, x)
         z = self.tau(z)
         d_out = self.latent_dim * 2 if self.is_variational else self.latent_dim
-        z = nn.Dense(d_out)(z)
+        if self.use_dense:
+            z = nn.Dense(d_out)(z)
         return z
