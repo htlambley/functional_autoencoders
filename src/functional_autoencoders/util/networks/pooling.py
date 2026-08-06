@@ -19,14 +19,3 @@ class MLPKernelPooling(nn.Module):
         z = jnp.einsum("...xy,...y->...x", kernel_evals, u)
         z = z.mean(axis=range(1, z.ndim - 1))
         return z
-
-
-class DeepSetPooling(nn.Module):
-    mlp_dim: int = 128
-    mlp_n_hidden_layers: int = 2
-
-    @nn.compact
-    def __call__(self, u, x):
-        z = MLP([self.mlp_dim] * self.mlp_n_hidden_layers)(u)
-        z = z.mean(axis=1)
-        return z

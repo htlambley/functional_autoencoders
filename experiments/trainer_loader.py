@@ -3,7 +3,7 @@ import numpy as np
 from functional_autoencoders.domains import grid
 from functional_autoencoders.domains import off_grid
 from functional_autoencoders.encoders.cnn_encoder import CNNEncoder
-from functional_autoencoders.encoders.pooling_encoder import PoolingEncoder
+from functional_autoencoders.encoders.pooling_encoder import MLPPointwiseOperator, PoolingEncoder
 from experiments.custom_encoders import DiracEncoder
 from experiments.custom_decoders import DiracDecoder
 from functional_autoencoders.decoders.cnn_decoder import CNNDecoder
@@ -12,7 +12,6 @@ from functional_autoencoders.positional_encodings import (
     RandomFourierEncoding,
     IdentityEncoding,
 )
-from functional_autoencoders.util.networks.pooling import DeepSetPooling
 from functional_autoencoders.autoencoder import Autoencoder
 from functional_autoencoders.losses.vano import get_loss_vano_fn
 from functional_autoencoders.losses.fvae_sde import get_loss_fvae_sde_fn
@@ -74,15 +73,16 @@ def get_encoder(config, positional_encoding):
     hyperparams = component_config["options"][component_type]
 
     if component_type == "pooling":
-        pooling_fn = DeepSetPooling(
+        F = MLPPointwiseOperator(
             mlp_dim=hyperparams["mlp_dim"],
             mlp_n_hidden_layers=hyperparams["mlp_n_hidden_layers"],
+            positional_encoding=positional_encoding,
         )
+
         encoder = PoolingEncoder(
             latent_dim=component_config["latent_dim"],
             is_variational=component_config["is_variational"],
-            pooling_fn=pooling_fn,
-            positional_encoding=positional_encoding,
+            F=F,
         )
     elif component_type == "dirac":
         encoder = DiracEncoder(
