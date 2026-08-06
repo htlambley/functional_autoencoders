@@ -1,3 +1,4 @@
+import numpy as np
 from functools import partial
 import jax
 import jax.numpy as jnp
@@ -52,9 +53,9 @@ class RandomlySampledEuclidean(Domain):
 
 class SDE(Domain):
     epsilon: float
-    x0: float
+    x0: np.ndarray
 
-    def __init__(self, epsilon: float, x0: float):
+    def __init__(self, epsilon: float, x0: np.ndarray):
         self.epsilon = epsilon
         # x0 is not used directly here, but it will be accessed by the SDE loss
         self.x0 = x0
