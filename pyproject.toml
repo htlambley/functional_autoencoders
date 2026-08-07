@@ -7,7 +7,7 @@ build-backend = "setuptools.build_meta"  # If not defined, then legacy behavior 
 
 [project]
 name = "functional_autoencoders"
-version = "1.0.3"  
+version = "1.1.0"  
 description = "Functional autoencoder (FAE) and functional variational autoencoder (FVAE)"
 readme = "README.md"
 requires-python = ">=3.9"
