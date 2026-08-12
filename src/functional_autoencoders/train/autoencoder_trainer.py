@@ -1,3 +1,4 @@
+from datetime import datetime
 import sys
 import jax
 import jax.numpy as jnp
@@ -140,7 +141,8 @@ class AutoencoderTrainer:
                     for metric_name in self.metrics_history
                 ]
             )
-            print(f"epoch {epoch:6} || {metric_string}")
+            time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+            print(f"[{time}] epoch {epoch:6} || {metric_string}")
             sys.stdout.flush()
 
     def _get_optimizer(self, lr, lr_decay_step, lr_decay_factor):
