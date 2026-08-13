@@ -51,9 +51,6 @@ if __name__ == "__main__":
 
     start_time = time()
 
-    # TODO: revert commented-out experiments
-
-    """
     wrap_run(run_baseline_comparisons)(
         key=key,
         output_dir="tmp/experiments/exp_baseline_comparisons/cnn",
@@ -87,7 +84,6 @@ if __name__ == "__main__":
         n_runs=50,
         resolutions=(8, 16, 32, 64, 128),
     )
-    """
 
     wrap_run(run_rec_mse_vs_point_ratio)(
         key=key,
@@ -99,7 +95,6 @@ if __name__ == "__main__":
         enc_point_ratio_test_list=(0.1, 0.3, 0.5, 0.7, 0.9),
     )
 
-    """
     wrap_run(run_sde1d)(
         key=key,
         output_dir="tmp/experiments/exp_sde1d",
@@ -112,7 +107,6 @@ if __name__ == "__main__":
         output_dir="tmp/experiments/exp_sde2d",
         config_path="experiments/configs/config_sde2d.yaml",
     )
-    """
 
     wrap_run(run_sparse_training)(
         key=key,
@@ -132,7 +126,6 @@ if __name__ == "__main__":
         is_darcy=True,
     )
 
-    """
     wrap_run(run_sparse_vs_dense_wall_clock_training)(
         key=key,
         output_dir="tmp/experiments/exp_sparse_vs_dense_wall_clock_training",
@@ -150,7 +143,6 @@ if __name__ == "__main__":
         downscale=2,
         ratio_rand_pts_enc_train_list=(0.1, 1),
     )
-    """
 
     print("\n" + "-" * 40 + "\n")
     print(f"Total time taken: {(time() - start_time) / 60:.2f} minutes")
