@@ -10,42 +10,48 @@ from functional_autoencoders.util import get_raw_x, pickle_load
 
 
 def plot_error_distribution_per_index(
-        key,    
-        n_runs, 
-        u_full_ref,
-        state_high, 
-        state_low, 
-        autoencoder_high, 
-        autoencoder_low,
-        enc_point_ratio_test_high,
-        enc_point_ratio_test_low,
-        test_dataloader_full, 
-        save_dir,
-    ):
+    key,
+    n_runs,
+    u_full_ref,
+    state_high,
+    state_low,
+    autoencoder_high,
+    autoencoder_low,
+    enc_point_ratio_test_high,
+    enc_point_ratio_test_low,
+    test_dataloader_full,
+    save_dir,
+):
 
     key, subkey = jax.random.split(key)
     error_list_high, x_enc_list_high = get_error_and_x_enc_lists(
-        key=subkey, 
-        state=state_high, 
-        autoencoder=autoencoder_high, 
-        u_full=u_full_ref, 
-        enc_point_ratio_test=enc_point_ratio_test_high, 
-        n_runs=n_runs, 
-    )
-
-    _, x_enc_list_sorted_high = zip(*sorted(zip(error_list_high, x_enc_list_high), key=lambda x: x[0]))
-    key, subkey = jax.random.split(key)
-    error_list_low, x_enc_list_low = get_error_and_x_enc_lists(
-        key=subkey, 
-        state=state_low, 
-        autoencoder=autoencoder_low, 
-        u_full=u_full_ref, 
-        enc_point_ratio_test=enc_point_ratio_test_low, 
+        key=subkey,
+        state=state_high,
+        autoencoder=autoencoder_high,
+        u_full=u_full_ref,
+        enc_point_ratio_test=enc_point_ratio_test_high,
         n_runs=n_runs,
     )
-    _, x_enc_list_sorted_low = zip(*sorted(zip(error_list_low, x_enc_list_low), key=lambda x: x[0]))
 
-    indices_k_nearest_neighbors = get_k_nearest_neighbors_indices(u_full_ref, test_dataloader_full, 5)
+    _, x_enc_list_sorted_high = zip(
+        *sorted(zip(error_list_high, x_enc_list_high), key=lambda x: x[0])
+    )
+    key, subkey = jax.random.split(key)
+    error_list_low, x_enc_list_low = get_error_and_x_enc_lists(
+        key=subkey,
+        state=state_low,
+        autoencoder=autoencoder_low,
+        u_full=u_full_ref,
+        enc_point_ratio_test=enc_point_ratio_test_low,
+        n_runs=n_runs,
+    )
+    _, x_enc_list_sorted_low = zip(
+        *sorted(zip(error_list_low, x_enc_list_low), key=lambda x: x[0])
+    )
+
+    indices_k_nearest_neighbors = get_k_nearest_neighbors_indices(
+        u_full_ref, test_dataloader_full, 5
+    )
     indices_random_samples = get_random_sample_indices(subkey, test_dataloader_full, 5)
 
     for j, indices in enumerate([indices_k_nearest_neighbors, indices_random_samples]):
@@ -58,98 +64,132 @@ def plot_error_distribution_per_index(
             x_full = jnp.array(x_full)
 
             ax1 = fig.add_subplot(gs[0, i])
-            ax1.imshow(u_full.reshape(64, 64), cmap='hot')
-            ax1.set_title(f'idx={idx}')
-            ax1.axis('off')
+            ax1.imshow(u_full.reshape(64, 64), cmap="hot")
+            ax1.set_title(f"idx={idx}")
+            ax1.axis("off")
 
-            single_error_low = get_single_error_for_x_enc(autoencoder_low, state_low, u_full, x_enc_list_sorted_low[0])
-            single_error_high = get_single_error_for_x_enc(autoencoder_high, state_high, u_full, x_enc_list_sorted_high[0])
+            single_error_low = get_single_error_for_x_enc(
+                autoencoder_low, state_low, u_full, x_enc_list_sorted_low[0]
+            )
+            single_error_high = get_single_error_for_x_enc(
+                autoencoder_high, state_high, u_full, x_enc_list_sorted_high[0]
+            )
 
             ax2 = fig.add_subplot(gs[1, i])
 
             key, subkey = jax.random.split(key)
-            plot_error_distribution(subkey, state_high, autoencoder_high, test_dataloader_full, 
-                                    idx, n_runs, label='High', color='k', ax=ax2)
-            ax2.axvline(x=single_error_high.item(), color='k', linestyle='--')
+            plot_error_distribution(
+                subkey,
+                state_high,
+                autoencoder_high,
+                test_dataloader_full,
+                idx,
+                n_runs,
+                label="High",
+                color="k",
+                ax=ax2,
+            )
+            ax2.axvline(x=single_error_high.item(), color="k", linestyle="--")
 
             key, subkey = jax.random.split(key)
-            plot_error_distribution(subkey, state_low, autoencoder_low, test_dataloader_full, 
-                                    idx, n_runs, label='Low', color='r', ax=ax2)
-            ax2.axvline(x=single_error_low.item(), color='r', linestyle='--')
+            plot_error_distribution(
+                subkey,
+                state_low,
+                autoencoder_low,
+                test_dataloader_full,
+                idx,
+                n_runs,
+                label="Low",
+                color="r",
+                ax=ax2,
+            )
+            ax2.axvline(x=single_error_low.item(), color="r", linestyle="--")
 
             if i == len(indices) - 1:
                 ax2.legend()
 
             if i != 0:
-                ax2.set_ylabel('')
+                ax2.set_ylabel("")
 
         if save_dir is not None:
-            plt.savefig(f'{save_dir}/good_config_with_knn.pdf' if j == 0 else f'{save_dir}/good_config_with_random_samples.pdf')
+            plt.savefig(
+                f"{save_dir}/good_config_with_knn.pdf"
+                if j == 0
+                else f"{save_dir}/good_config_with_random_samples.pdf"
+            )
         plt.show()
         plt.close()
 
 
 def plot_error_vs_point_ratio(
-        key, 
-        idx,
-        n_runs, 
-        state_high, 
-        state_low, 
-        autoencoder_high, 
-        autoencoder_low, 
-        test_dataloader_full, 
-        enc_point_ratio_test_list,
-        save_dir,
-    ):
+    key,
+    idx,
+    n_runs,
+    state_high,
+    state_low,
+    autoencoder_high,
+    autoencoder_low,
+    test_dataloader_full,
+    enc_point_ratio_test_list,
+    save_dir,
+):
 
     key, subkey = jax.random.split(key)
     errors_high_per_ratio_rand_pts_enc_test = get_errors_per_ratio(
-        key=subkey, 
-        idx=idx, 
-        n_runs=n_runs, 
-        state=state_high, 
-        autoencoder=autoencoder_high, 
-        test_dataloader_full=test_dataloader_full, 
+        key=subkey,
+        idx=idx,
+        n_runs=n_runs,
+        state=state_high,
+        autoencoder=autoencoder_high,
+        test_dataloader_full=test_dataloader_full,
         enc_point_ratio_test_list=enc_point_ratio_test_list,
     )
 
     key, subkey = jax.random.split(key)
     errors_low_per_ratio_rand_pts_enc_test = get_errors_per_ratio(
-        key=subkey, 
-        idx=idx, 
-        n_runs=n_runs, 
-        state=state_low, 
-        autoencoder=autoencoder_low, 
-        test_dataloader_full=test_dataloader_full, 
+        key=subkey,
+        idx=idx,
+        n_runs=n_runs,
+        state=state_low,
+        autoencoder=autoencoder_low,
+        test_dataloader_full=test_dataloader_full,
         enc_point_ratio_test_list=enc_point_ratio_test_list,
     )
 
     max_error = max(
-        [max(errors) for errors in errors_low_per_ratio_rand_pts_enc_test.values()] + 
-        [max(errors) for errors in errors_high_per_ratio_rand_pts_enc_test.values()]
+        [max(errors) for errors in errors_low_per_ratio_rand_pts_enc_test.values()]
+        + [max(errors) for errors in errors_high_per_ratio_rand_pts_enc_test.values()]
     )
 
-    color_palette = sns.color_palette('Reds', len(errors_high_per_ratio_rand_pts_enc_test))
+    color_palette = sns.color_palette(
+        "Reds", len(errors_high_per_ratio_rand_pts_enc_test)
+    )
 
-    for i, (enc_point_ratio_test, errors) in enumerate(errors_high_per_ratio_rand_pts_enc_test.items()):
-        sns.kdeplot(jnp.array(errors).flatten(), label=int(enc_point_ratio_test * 100), color=color_palette[i])
+    for i, (enc_point_ratio_test, errors) in enumerate(
+        errors_high_per_ratio_rand_pts_enc_test.items()
+    ):
+        sns.kdeplot(
+            np.array(jnp.array(errors).flatten()),
+            label=int(enc_point_ratio_test * 100),
+            color=color_palette[i],
+        )
 
     plt.xlim(0, max_error)
-    plt.xlabel('MSE')
-    plt.legend(title='Point \% (evaluation)')
+    plt.xlabel("MSE")
+    plt.legend(title="Point \\% (evaluation)")
     if save_dir is not None:
-        plt.savefig(f'{save_dir}/high_model_mse.pdf', bbox_inches='tight')
+        plt.savefig(f"{save_dir}/high_model_mse.pdf", bbox_inches="tight")
         plt.close()
     else:
         plt.show()
 
     for enc_point_ratio_test, errors in errors_low_per_ratio_rand_pts_enc_test.items():
-        sns.kdeplot(jnp.array(errors).flatten(), color=color_palette.pop(0))
+        sns.kdeplot(np.array(jnp.array(errors).flatten()), color=color_palette.pop(0))
 
     plt.xlim(0, max_error)
-    plt.xlabel('MSE')
+    plt.xlabel("MSE")
     if save_dir is not None:
-        plt.savefig(f'{save_dir}/low_model_mse.pdf', bbox_inches='tight')
+        plt.savefig(f"{save_dir}/low_model_mse.pdf", bbox_inches="tight")
     plt.show()
 
 
@@ -196,24 +236,30 @@ def plot_point_ratios(data_output_dir, save_dir=None):
     ax.set_ylabel(r"MSE [$\times 10^{-4}$]")
     ax.xaxis.set_tick_params(top=False, which="both")
     ax.yaxis.set_tick_params(right=False, which="both")
+    ax.set_xticks([10, 30, 50, 70, 90])
+    ax.set_yticks([4.5e-4, 6e-4, 7e-4, 9.5e-4, 12.0e-4, 14.5e-4])
+    ax.set_yticklabels(["4.5", "6.0", "7.0", "9.5", "12.0", "14.5"])
+    ax.set_xlim(5, 95)
     ax.legend(title="Point \\% (train)")
 
     if save_dir is not None:
         fig.savefig(f"{save_dir}/ns_point_ratios.pdf")
 
 
-def plot_error_distribution(key, state, autoencoder, test_dataloader, idx, n_runs, **plot_kwargs):
+def plot_error_distribution(
+    key, state, autoencoder, test_dataloader, idx, n_runs, **plot_kwargs
+):
     key, subkey = jax.random.split(key)
     error_list_low, _ = get_error_and_x_enc_lists(
-        key=subkey, 
-        state=state, 
-        autoencoder=autoencoder, 
+        key=subkey,
+        state=state,
+        autoencoder=autoencoder,
         u_full=jnp.array(test_dataloader.dataset[idx][0]),
-        enc_point_ratio_test=0.1, 
-        n_runs=n_runs, 
+        enc_point_ratio_test=0.1,
+        n_runs=n_runs,
     )
     plt.hist(error_list_low, bins=100)
-    sns.kdeplot(jnp.array(error_list_low).flatten(), **plot_kwargs)
+    sns.kdeplot(np.array(jnp.array(error_list_low).flatten()), **plot_kwargs)
 
 
 def get_mse_results(data_output_dir):
@@ -221,7 +267,9 @@ def get_mse_results(data_output_dir):
     for run_idx_str in os.listdir(data_output_dir):
         for train_point_ratio in os.listdir(os.path.join(data_output_dir, run_idx_str)):
             result = pickle_load(
-                os.path.join(data_output_dir, run_idx_str, train_point_ratio, "data.pickle")
+                os.path.join(
+                    data_output_dir, run_idx_str, train_point_ratio, "data.pickle"
+                )
             )
             mse_vs_point_ratio = result["additional_data"]["mse_vs_point_ratio"]
             train_point_ratio = result["additional_data"]["train_point_ratio"]
@@ -243,21 +291,31 @@ def get_mse_results(data_output_dir):
             )
         }
 
-    mse_results = {k: v for k, v in sorted(mse_results.items(), key=lambda item: item[0])}
+    mse_results = {
+        k: v for k, v in sorted(mse_results.items(), key=lambda item: item[0])
+    }
     return mse_results
 
 
-def get_errors_per_ratio(key, idx, n_runs, state, autoencoder, test_dataloader_full, enc_point_ratio_test_list):
+def get_errors_per_ratio(
+    key,
+    idx,
+    n_runs,
+    state,
+    autoencoder,
+    test_dataloader_full,
+    enc_point_ratio_test_list,
+):
     errors_per_ratio_rand_pts_enc_test = {}
     for enc_point_ratio_test in enc_point_ratio_test_list:
         key, subkey = jax.random.split(key)
         error_list, _ = get_error_and_x_enc_lists(
-            key=subkey, 
-            state=state, 
-            autoencoder=autoencoder, 
+            key=subkey,
+            state=state,
+            autoencoder=autoencoder,
             u_full=jnp.array(test_dataloader_full.dataset[idx][0]),
-            enc_point_ratio_test=enc_point_ratio_test, 
-            n_runs=n_runs, 
+            enc_point_ratio_test=enc_point_ratio_test,
+            n_runs=n_runs,
         )
 
         errors_per_ratio_rand_pts_enc_test[enc_point_ratio_test] = error_list
@@ -288,18 +346,16 @@ def get_single_error_for_x_enc(autoencoder, state, u_full, x_enc_in):
     u_enc = u_full[u_mask == 1]
     x_enc = x_full[u_mask == 1]
 
-    vars = {'params': state.params, 'batch_stats': state.batch_stats}
+    vars = {"params": state.params, "batch_stats": state.batch_stats}
     u_hat = autoencoder.apply(vars, u_enc[None], x_enc[None], x_full[None])
 
-    single_error = jnp.mean(jnp.sum((u_full - u_hat)**2, axis=2), axis=1)
+    single_error = jnp.mean(jnp.sum((u_full - u_hat) ** 2, axis=2), axis=1)
     return single_error
 
 
-def get_single_error_and_x_enc(key, autoencoder, state, u_full, x_full=None, ratio_rand_pts_enc_test=0.1):
-    if x_full is None:
-        n = int(u_full.shape[0] ** 0.5)
-        x_full = get_raw_x(n)
-
+def get_single_error_and_x_enc(
+    key, autoencoder, state, u_full, x_full, ratio_rand_pts_enc_test=0.1
+):
     n_total_pts = u_full.shape[0]
     n_rand_pts = int(ratio_rand_pts_enc_test * n_total_pts)
 
@@ -309,14 +365,16 @@ def get_single_error_and_x_enc(key, autoencoder, state, u_full, x_full=None, rat
     u_partial = u_full[indices, :]
     x_partial = x_full[indices, :]
 
-    vars = {'params': state.params, 'batch_stats': state.batch_stats}
+    vars = {"params": state.params, "batch_stats": state.batch_stats}
     u_hat = autoencoder.apply(vars, u_partial[None], x_partial[None], x_full[None])
 
-    single_error = jnp.mean(jnp.sum((u_full - u_hat)**2, axis=2), axis=1)
+    single_error = jnp.mean(jnp.sum((u_full - u_hat) ** 2, axis=2), axis=1)
     return single_error, x_partial
 
 
-def get_error_and_x_enc_lists(key, state, autoencoder, u_full, enc_point_ratio_test, n_runs):
+def get_error_and_x_enc_lists(
+    key, state, autoencoder, u_full, enc_point_ratio_test, n_runs
+):
     error_list = []
     x_enc_list = []
 
@@ -325,7 +383,9 @@ def get_error_and_x_enc_lists(key, state, autoencoder, u_full, enc_point_ratio_t
 
     for _ in range(n_runs):
         key, subkey = jax.random.split(key)
-        single_error, x_partial = get_single_error_and_x_enc(subkey, autoencoder, state, u_full, x_full, enc_point_ratio_test)
+        single_error, x_partial = get_single_error_and_x_enc(
+            subkey, autoencoder, state, u_full, x_full, enc_point_ratio_test
+        )
         error_list.append(single_error.item())
         x_enc_list.append(x_partial)
 
@@ -335,7 +395,7 @@ def get_error_and_x_enc_lists(key, state, autoencoder, u_full, enc_point_ratio_t
 def get_k_nearest_neighbors_indices(u_target, dataloader, k):
     u_target = jnp.array(u_target)
     u_list = [jnp.array(u[0]) for u in dataloader.dataset]
-    distances = [jnp.sum((u_target - u_ref)**2) for u_ref in u_list]
+    distances = [jnp.sum((u_target - u_ref) ** 2) for u_ref in u_list]
     nearest_indices = jnp.argsort(jnp.array(distances))[:k]
     return nearest_indices
 
@@ -343,4 +403,6 @@ def get_k_nearest_neighbors_indices(u_target, dataloader, k):
 def get_random_sample_indices(key, dataloader, n_samples):
     key, subkey = jax.random.split(key)
     n_samples = min(n_samples, len(dataloader.dataset))
-    return jax.random.choice(subkey, jnp.arange(len(dataloader.dataset)), shape=(n_samples,), replace=False)
+    return jax.random.choice(
+        subkey, jnp.arange(len(dataloader.dataset)), shape=(n_samples,), replace=False
+    )
