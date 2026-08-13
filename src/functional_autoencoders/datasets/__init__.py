@@ -21,7 +21,9 @@ class ComplementMasking:
         if self.encoder_point_ratio == -1:
             return u, x, u, x
         elif self.encoder_point_ratio <= 0.0 or self.encoder_point_ratio >= 1.0:
-            raise ValueError("`encoder_point_ratio` for `ComplementMasking` should be in range 0 < encoder_point_ratio < 1.")
+            raise ValueError(
+                "`encoder_point_ratio` for `ComplementMasking` should be in range 0 < encoder_point_ratio < 1."
+            )
 
         n_total_pts = u.shape[0]
         n_rand_pts = int(self.encoder_point_ratio * n_total_pts)
@@ -45,8 +47,15 @@ class RandomMasking:
     def __call__(self, u, x):
         if self.encoder_point_ratio == -1 and self.decoder_point_ratio == -1:
             return u, x, u, x
-        elif self.encoder_point_ratio <= 0.0 or self.encoder_point_ratio >= 1.0 or self.decoder_point_ratio <= 0.0 or self.decoder_point_ratio >= 1.0:
-            raise ValueError("Point ratios for `RandomMasking` should be in range 0 < point_ratio < 1.")
+        elif (
+            self.encoder_point_ratio <= 0.0
+            or self.encoder_point_ratio >= 1.0
+            or self.decoder_point_ratio <= 0.0
+            or self.decoder_point_ratio >= 1.0
+        ):
+            raise ValueError(
+                "Point ratios for `RandomMasking` should be in range 0 < point_ratio < 1."
+            )
 
         n_total_pts = u.shape[0]
         n_rand_pts_enc = int(self.encoder_point_ratio * n_total_pts)
@@ -70,7 +79,9 @@ class RandomMissingData:
 
     def __call__(self, u, x):
         if self.point_ratio <= 0.0 or self.point_ratio >= 1.0:
-            raise ValueError("`point_ratio` for `RandomMissingData` should satisfy 0.0 < point_ratio < 1.0")
+            raise ValueError(
+                "`point_ratio` for `RandomMissingData` should satisfy 0.0 < point_ratio < 1.0"
+            )
         n_points = int(u.shape[1] * self.point_ratio)
         indices = np.sort(np.random.choice(u.shape[1], n_points, replace=False))
         u = u[:, indices]
@@ -78,7 +89,9 @@ class RandomMissingData:
         return u, x
 
 
-def _get_dataloader(dataset_class, train, transform, dataset_kwargs, batch_size, num_workers, shuffle):
+def _get_dataloader(
+    dataset_class, train, transform, dataset_kwargs, batch_size, num_workers, shuffle
+):
     dataset = dataset_class(
         train=train,
         transform=transform,
@@ -92,6 +105,7 @@ def _get_dataloader(dataset_class, train, transform, dataset_kwargs, batch_size,
     )
     return dataloader
 
+
 def get_dataloaders(
     dataset_class,
     batch_size=32,
@@ -103,11 +117,43 @@ def get_dataloaders(
     **dataset_kwargs,
 ):
     if which == "train":
-        return _get_dataloader(dataset_class, train=True, transform=transform_train, dataset_kwargs=dataset_kwargs, batch_size=batch_size, num_workers=num_workers, shuffle=shuffle_train)
+        return _get_dataloader(
+            dataset_class,
+            train=True,
+            transform=transform_train,
+            dataset_kwargs=dataset_kwargs,
+            batch_size=batch_size,
+            num_workers=num_workers,
+            shuffle=shuffle_train,
+        )
     elif which == "test":
-        return _get_dataloader(dataset_class, train=False, transform=transform_test, dataset_kwargs=dataset_kwargs, batch_size=batch_size, num_workers=num_workers, shuffle=False)
+        return _get_dataloader(
+            dataset_class,
+            train=False,
+            transform=transform_test,
+            dataset_kwargs=dataset_kwargs,
+            batch_size=batch_size,
+            num_workers=num_workers,
+            shuffle=False,
+        )
     else:
-        return _get_dataloader(dataset_class, train=True, transform=transform_train, dataset_kwargs=dataset_kwargs, batch_size=batch_size, num_workers=num_workers, shuffle=shuffle_train), _get_dataloader(dataset_class, train=False, transform=transform_test, dataset_kwargs=dataset_kwargs, batch_size=batch_size, num_workers=num_workers, shuffle=False)
+        return _get_dataloader(
+            dataset_class,
+            train=True,
+            transform=transform_train,
+            dataset_kwargs=dataset_kwargs,
+            batch_size=batch_size,
+            num_workers=num_workers,
+            shuffle=shuffle_train,
+        ), _get_dataloader(
+            dataset_class,
+            train=False,
+            transform=transform_test,
+            dataset_kwargs=dataset_kwargs,
+            batch_size=batch_size,
+            num_workers=num_workers,
+            shuffle=False,
+        )
 
 
 # `_numpy_collate` and `NumpyLoader` are based on the JAX notebook https://jax.readthedocs.io/en/latest/notebooks/Neural_Network_and_Data_Loading.html
@@ -211,8 +257,7 @@ class DownloadableDataset(Dataset, OnDiskDataset):
     does nothing) and then in any case is loaded using `_load_data`.
 
     The preprocessing step is run by default after download, and can be used for tasks such as
-    unzipping a compressed file. It can be forced using the `force_preprocess` option, which will
-    run the preprocessing step even if the dataset is already present on disk.
+    unzipping a compressed file.
 
     Derived classes must implement `_load_data`, `__len__` and `__getitem__`.
     They can also optionally implement `_preprocess_data`.
@@ -221,9 +266,6 @@ class DownloadableDataset(Dataset, OnDiskDataset):
     download : bool
         Toggles whether to allow downloading the dataset from the remote source. (default = `True`)
         Even if `True`, will only download if not already present on disk.
-
-    force_preprocess : bool
-        If `True`, runs the preprocessing step even if the dataset has already been downloaded. (default = `False`)
 
     force_download : bool
         If `True`, redownloads and preprocesses the data even if already downloaded. (default = `False`)
@@ -236,13 +278,13 @@ class DownloadableDataset(Dataset, OnDiskDataset):
         The default search path is `current_working_directory/data`, and
         `data_base` alters the base path relative to `current_working_directory`.
     """
+
     data_url: str
     download_filename: str
 
     def __init__(
         self,
         download=True,
-        force_preprocess=False,
         force_download=False,
         train=True,
         data_base="",
@@ -264,8 +306,6 @@ class DownloadableDataset(Dataset, OnDiskDataset):
             print(f"Downloading dataset {self.dataset_name}.")
             self._download_data()
             print(f"Preprocessing dataset {self.dataset_name}")
-            self._preprocess_data()
-        elif force_preprocess:
             self._preprocess_data()
 
         self._load_data(train)
@@ -334,5 +374,3 @@ class DownloadableDataset(Dataset, OnDiskDataset):
             self.dataset_name,
             self.download_filename,
         )
-
-

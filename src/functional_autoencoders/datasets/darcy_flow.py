@@ -55,6 +55,7 @@ class DarcyFlow(DownloadableDataset):
     def _preprocess_data(self):
         with zipfile.ZipFile(self.download_path, "r") as f:
             f.extractall(self.dataset_dir)
+        os.remove(self.download_path)
 
     def _get_slow_data_filename(self, train):
         if train:
@@ -91,7 +92,7 @@ class DarcyFlow(DownloadableDataset):
             )
 
             u = aam.downsample(u, self.downscale)
-            x = x[::self.downscale, ::self.downscale, :]
+            x = x[:: self.downscale, :: self.downscale, :]
 
         u = u.reshape(u.shape[0], -1, 1)
         x = x.reshape(-1, 2)

@@ -11,9 +11,6 @@ from experiments.exp_baseline_comparisons.main import (
     run_baseline_comparisons,
 )
 from experiments.exp_dirac.main import run_dirac
-from experiments.exp_rec_mse_vs_downsample_ratio.main import (
-    run_rec_mse_vs_downsample_ratio,
-)
 from experiments.exp_rec_mse_vs_point_ratio.main import run_rec_mse_vs_point_ratio
 from experiments.exp_sde1d.main import run_sde1d
 from experiments.exp_sde2d.main import run_sde2d
@@ -86,16 +83,6 @@ if __name__ == "__main__":
         config_path="experiments/configs/config_dirac_vano.yaml",
         n_runs=50,
         resolutions=(8, 16, 32, 64, 128),
-    )
-
-    wrap_run(run_rec_mse_vs_downsample_ratio)(
-        key=key,
-        output_dir="tmp/experiments/exp_rec_mse_vs_downsample_ratio",
-        config_path="experiments/configs/config_fae.yaml",
-        n_runs=5,
-        ns_viscosity=1e-4,
-        downsample_ratios=(1, 2, 4, 8),
-        enc_point_ratio_train=-1,
     )
 
     wrap_run(run_rec_mse_vs_point_ratio)(

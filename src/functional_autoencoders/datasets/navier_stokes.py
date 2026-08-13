@@ -37,7 +37,7 @@ class NavierStokes(DownloadableDataset):
     but the dataset actually includes simulations up to $T = 50$.
     """
 
-    dataset_name = "navier_stokes"
+    dataset_name = ""
     # Data URL and filename are dynamically determined based on resolution and viscosity choice.
     data_url = ""
     download_filename = ""
@@ -82,22 +82,26 @@ class NavierStokes(DownloadableDataset):
             self.data_url = "https://drive.usercontent.google.com/download?id=1r3idxpsHa21ijhlu3QQ1hVuXcqnBTO7d&export=download&authuser=0&confirm=t&uuid=05b098fa-6a5b-40cd-9b0f-39fa5b7c9261&at=APZUnTWMn104jdp7fiMuS7y5sxL7:1702487907119"
             self.download_filename = "NavierStokes_V1e-3_N5000_T50.zip"
             self.dataset_filename = "ns_V1e-3_N5000_T50.mat"
+            self.dataset_name = "navier_stokes_v1e-3"
 
         elif viscosity == 1e-4:
             if resolution == 64:
                 self.data_url = "https://drive.usercontent.google.com/download?id=1RmDQQ-lNdAceLXrTGY_5ErvtINIXnpl3&export=download&authuser=0&confirm=t&uuid=a218d5ab-1b75-4b1c-a5da-ed0b71bd3f20&at=APZUnTXLTgsSn6kzgcqTUn2fwDTk:1702490181229"
                 self.download_filename = "NavierStokes_V1e-4_N10000_T30.zip"
                 self.dataset_filename = "ns_V1e-4_N10000_T30.mat"
+                self.dataset_name = "navier_stokes_v1e-4_64"
             else:
                 self.data_url = "https://drive.usercontent.google.com/download?id=1pr_Up54tNADCGhF8WLvmyTfKlCD5eEkI&export=download&authuser=0&confirm=t&uuid=d6ce8938-295e-40a4-9f87-d24ebdabf310&at=APZUnTUbM3Hu0GZiNSbQuzuyH7fr:1702639561668"
                 self.download_filename = "NavierStokes_V1e-4_N20_T50_R256_test.zip"
                 self.dataset_filename = "ns_data_V1e-4_N20_T50_R256test.mat"
                 self._is_h5 = False
+                self.dataset_name = "navier_stokes_v1e-4_256"
 
         elif viscosity == 1e-5:
             self.data_url = "https://drive.usercontent.google.com/download?id=1lVgpWMjv9Z6LEv3eZQ_Qgj54lYeqnGl5&export=download&authuser=0&confirm=t&uuid=68addf1d-8b63-4591-b32a-6ee2b4886e66&at=APZUnTU4rRh0Qwj4UUGbBBxetFUR:1702490348128"
             self.download_filename = "NavierStokes_V1e-5_N1200_T20.zip"
             self.dataset_filename = "NavierStokes_V1e-5_N1200_T20.mat"
+            self.dataset_name = "navier_stokes_v1e-5"
             self._is_h5 = False
 
         else:
@@ -165,6 +169,7 @@ class NavierStokes(DownloadableDataset):
     def _preprocess_data(self):
         with zipfile.ZipFile(self.download_path, "r") as f:
             f.extractall(self.dataset_dir)
+        os.remove(self.download_path)
 
     def __len__(self):
         return self.u_data.shape[0]
