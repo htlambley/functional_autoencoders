@@ -15,12 +15,19 @@ The `functional_autoencoders` module contains implementations of
 1. **Functional Variational Autoencoder (FVAE)**, an extension of variational autoencoders (VAEs) to functional data; and
 2. **Functional Autoencoder (FAE)**, a regularised nonprobabilistic autoencoder for functional data.
 
+## Latest version
+
+The latest version of `functional_autoencoders`, accessible from the [Releases page](https://github.com/htlambley/functional_autoencoders/releases), is version [v2.0.0](https://github.com/htlambley/functional_autoencoders/releases/tag/v2.0.0). 
+
+Version v2.0.0 includes bug fixes and can be used to reproduce the experiments in the current arXiv and JMLR versions of the article "Autoencoders in Function Space".
+
+
 
 ## Quickstart
 
 **If you want to install the `functional_autoencoders` package** (e.g., to use in your own projects and notebooks): clone the repository and install the package using `pip` with
 
-    pip install git+https://github.com/htlambley/functional_autoencoders.git
+    pip install git+https://github.com/htlambley/functional_autoencoders.git@v2.0.0
 
 You can then import the `functional_autoencoders` package in your own scripts and notebooks.
 To get started, why not follow one of our quickstart notebooks:
